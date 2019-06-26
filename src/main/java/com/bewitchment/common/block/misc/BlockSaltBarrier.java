@@ -14,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -62,7 +63,7 @@ public class BlockSaltBarrier extends BlockMod {
 	public BlockSaltBarrier() {
 		super(LibBlockName.SALT_BARRIER, Material.CIRCUITS);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(NORTH, BlockSaltBarrier.EnumAttachPosition.NONE).withProperty(EAST, BlockSaltBarrier.EnumAttachPosition.NONE).withProperty(SOUTH, BlockSaltBarrier.EnumAttachPosition.NONE).withProperty(WEST, BlockSaltBarrier.EnumAttachPosition.NONE));
-		setSoundType(SoundType.CLOTH);
+		setSoundType(SoundType.SAND);
 		setCreativeTab(null);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -100,6 +101,12 @@ public class BlockSaltBarrier extends BlockMod {
 		}
 
 		return i;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+		return BlockFaceShape.UNDEFINED;
 	}
 
 	@Override

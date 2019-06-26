@@ -40,6 +40,7 @@ public class ItemTaglock extends ItemMod {
 
 	public ItemTaglock() {
 		super(LibItemName.TAGLOCK);
+		this.setMaxStackSize(1);
 	}
 
 	//Todo: Make appearance change based on whether it has a taglock or not in it.
@@ -83,7 +84,7 @@ public class ItemTaglock extends ItemMod {
 		if (NBTHelper.hasTag(stack, Bewitchment.TAGLOCK_ENTITY_NAME)) {
 			tooltip.add(TextFormatting.DARK_GRAY + NBTHelper.getString(stack, Bewitchment.TAGLOCK_ENTITY_NAME));
 		} else {
-			tooltip.add(TextFormatting.DARK_GRAY + I18n.format("item.tag_lock.empty"));
+			tooltip.add(TextFormatting.DARK_GRAY + I18n.format("item.bewitchment.tag_lock.empty"));
 		}
 	}
 
@@ -92,9 +93,9 @@ public class ItemTaglock extends ItemMod {
 	public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
 		IBlockState state = world.getBlockState(pos);
 		if (state.getBlock().isBed(state, world, pos, player)) {
-			Optional<EntityPlayer> victim = getPlayerFromBed(world, pos, state.getValue(BlockBed.OCCUPIED));
-			if (victim.isPresent()) {
-				setVictim(player.getHeldItem(hand), victim.get());
+			EntityPlayer victim = getPlayerFromBed(world, pos, state.getValue(BlockBed.OCCUPIED));
+			if (victim != null) {
+				setVictim(player.getHeldItem(hand), victim);
 				return EnumActionResult.SUCCESS;
 			}
 		}
@@ -102,10 +103,15 @@ public class ItemTaglock extends ItemMod {
 		return super.onItemUseFirst(player, world, pos, side, hitX, hitY, hitZ, hand);
 	}
 
-	private Optional<EntityPlayer> getPlayerFromBed(World world, BlockPos bed, boolean inBed) {
-		return world.playerEntities.stream()
-				.filter(player -> player.bedLocation != null)
-				.filter(player -> player.getBedLocation().equals(bed))
-				.findAny();
+	private EntityPlayer getPlayerFromBed(World world, BlockPos bed, boolean inBed) {
+		EntityPlayer result = null;
+
+		Object[] playersForBed = world.playerEntities.stream()
+				.filter(player -> player.getBedLocation() != null)
+				.filter(player -> player.getBedLocation().equals(bed)).toArray();
+		if (playersForBed.length > 0) {
+			result = (EntityPlayer) playersForBed[world.rand.nextInt(playersForBed.length)];
+		}
+		return result;
 	}
 }

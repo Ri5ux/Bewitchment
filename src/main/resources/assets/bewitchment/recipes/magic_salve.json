@@ -2,8 +2,7 @@
   "type": "forge:ore_shapeless",
   "ingredients": [
     {
-      "item": "bewitchment:wax",
-      "data": 0
+      "item": "#GENERIC_WAX"
     },
     {
       "item": "bewitchment:mandrake_root",

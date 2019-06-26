@@ -6,6 +6,7 @@ import com.bewitchment.common.item.ModItems;
 import com.bewitchment.common.lib.LibMod;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -139,7 +140,7 @@ public class ThaumcraftCompat {
 		evt.register.registerObjectTag(new ItemStack(ModItems.gem, 1, Gem.BLOODSTONE.ordinal()), new AspectList().add(Aspect.DESIRE, 4).add(Aspect.CRYSTAL, 4).add(Aspect.LIFE, 4).add(SUN, 4));
 		evt.register.registerObjectTag(new ItemStack(ModItems.gem, 1, Gem.JASPER.ordinal()), new AspectList().add(Aspect.DESIRE, 4).add(Aspect.CRYSTAL, 4).add(Aspect.AVERSION, 4).add(Aspect.PROTECT, 4));
 		evt.register.registerObjectTag(new ItemStack(ModItems.gem, 1, Gem.MALACHITE.ordinal()), new AspectList().add(Aspect.DESIRE, 4).add(Aspect.CRYSTAL, 4).add(Aspect.EARTH, 4).add(Aspect.EXCHANGE, 4));
-		evt.register.registerObjectTag(new ItemStack(ModItems.gem, 1, Gem.AMETHYST.ordinal()), new AspectList().add(Aspect.DESIRE, 4).add(Aspect.CRYSTAL, 4).add(Aspect.ALCHEMY, 4).add(MOON, 4));
+		evt.register.registerObjectTag(new ItemStack(ModItems.gem, 1, Gem.BW_AMETHYST.ordinal()), new AspectList().add(Aspect.DESIRE, 4).add(Aspect.CRYSTAL, 4).add(Aspect.ALCHEMY, 4).add(MOON, 4));
 		evt.register.registerObjectTag(new ItemStack(ModItems.gem, 1, Gem.ALEXANDRITE.ordinal()), new AspectList().add(Aspect.DESIRE, 4).add(Aspect.CRYSTAL, 4).add(Aspect.MIND, 4).add(Aspect.PROTECT, 4));
 		evt.register.registerObjectTag(new ItemStack(ModItems.glass_jar), new AspectList().add(Aspect.VOID, 6).add(Aspect.CRYSTAL, 6));
 		evt.register.registerObjectTag(new ItemStack(ModItems.spectral_dust), new AspectList().add(Aspect.VOID, 4).add(Aspect.SOUL, 4));
@@ -156,10 +157,10 @@ public class ThaumcraftCompat {
 		evt.register.registerObjectTag(new ItemStack(ModItems.pure_filament), new AspectList().add(Aspect.CRAFT, 4).add(Aspect.AURA, 4));
 		evt.register.registerObjectTag(new ItemStack(ModItems.soul_string), new AspectList().add(Aspect.CRAFT, 4).add(Aspect.SOUL, 4));
 		evt.register.registerObjectTag(new ItemStack(ModItems.regal_silk), new AspectList().add(Aspect.CRAFT, 4).add(Aspect.SENSES, 4));
-		evt.register.registerObjectTag(new ItemStack(ModItems.ritual_chalk), new AspectList().add(Aspect.MAGIC, 4).add(Aspect.EARTH, 4).add(Aspect.MIND, 4));
-		evt.register.registerObjectTag(new ItemStack(ModItems.ritual_chalk, 1, 1), new AspectList().add(Aspect.MAGIC, 4).add(Aspect.EARTH, 4).add(Aspect.MIND, 4).add(SUN, 4));
-		evt.register.registerObjectTag(new ItemStack(ModItems.ritual_chalk, 1, 2), new AspectList().add(Aspect.MAGIC, 4).add(Aspect.EARTH, 4).add(Aspect.MIND, 4).add(Aspect.ELDRITCH, 4));
-		evt.register.registerObjectTag(new ItemStack(ModItems.ritual_chalk, 1, 3), new AspectList().add(Aspect.MAGIC, 4).add(Aspect.EARTH, 4).add(Aspect.MIND, 4).add(DEMON, 4));
+		evt.register.registerObjectTag(new ItemStack(ModItems.ritual_chalk_normal), new AspectList().add(Aspect.MAGIC, 4).add(Aspect.EARTH, 4).add(Aspect.MIND, 4));
+		evt.register.registerObjectTag(new ItemStack(ModItems.ritual_chalk_golden), new AspectList().add(Aspect.MAGIC, 4).add(Aspect.EARTH, 4).add(Aspect.MIND, 4).add(SUN, 4));
+		evt.register.registerObjectTag(new ItemStack(ModItems.ritual_chalk_ender), new AspectList().add(Aspect.MAGIC, 4).add(Aspect.EARTH, 4).add(Aspect.MIND, 4).add(Aspect.ELDRITCH, 4));
+		evt.register.registerObjectTag(new ItemStack(ModItems.ritual_chalk_nether), new AspectList().add(Aspect.MAGIC, 4).add(Aspect.EARTH, 4).add(Aspect.MIND, 4).add(DEMON, 4));
 		evt.register.registerObjectTag(new ItemStack(ModItems.seed_hellebore), new AspectList().add(Aspect.PLANT, 1).add(DEMON, 1));
 		evt.register.registerObjectTag(new ItemStack(ModItems.seed_silphium), new AspectList().add(Aspect.PLANT, 1).add(Aspect.DESIRE, 1));
 		evt.register.registerObjectTag(new ItemStack(ModItems.seed_garlic), new AspectList().add(Aspect.PLANT, 1).add(Aspect.SENSES, 1).add(Aspect.AVERSION, 1));
@@ -193,6 +194,9 @@ public class ThaumcraftCompat {
 		evt.register.registerObjectTag(new ItemStack(ModItems.grilled_watermelon), new AspectList().add(Aspect.LIFE, 3).add(Aspect.DESIRE, 3));
 		evt.register.registerObjectTag(new ItemStack(ModItems.yew_aril), new AspectList().add(Aspect.PLANT, 3).add(Aspect.MIND, 3));
 		evt.register.registerObjectTag(new ItemStack(ModItems.juniper_berries), new AspectList().add(Aspect.PLANT, 3).add(Aspect.MAGIC, 3));
+		evt.register.registerObjectTag(new ItemStack(ModItems.hellhound_horn), new AspectList().add(DEMON, 6).add(Aspect.AVERSION, 6));
+		evt.register.registerObjectTag(new ItemStack(ModItems.demon_heart), new AspectList().add(DEMON, 6).add(Aspect.AVERSION, 6).add(Aspect.FIRE, 6));
+		evt.register.registerObjectTag(new ItemStack(ModItems.uranid_venom), new AspectList().add(DEMON, 6).add(Aspect.ALCHEMY, 6).add(Aspect.CRYSTAL, 9));
 		//Todo: Dynamic aspects based on brew contents
 		evt.register.registerObjectTag(new ItemStack(ModItems.empty_brew_drink), new AspectList().add(Aspect.ALCHEMY, 6).add(Aspect.CRYSTAL, 6).add(Aspect.VOID, 6));
 		evt.register.registerObjectTag(new ItemStack(ModItems.empty_brew_linger), new AspectList().add(Aspect.ALCHEMY, 6).add(Aspect.CRYSTAL, 6).add(Aspect.AIR, 6).add(Aspect.VOID, 6));
@@ -242,6 +246,19 @@ public class ThaumcraftCompat {
 		evt.register.registerObjectTag(new ItemStack(ModBlocks.beehive), new AspectList().add(Aspect.BEAST, 15).add(Aspect.DESIRE, 15).add(Aspect.PLANT, 13).add(SUN, 10));
 		evt.register.registerObjectTag(new ItemStack(ModBlocks.salt_ore), new AspectList().add(Aspect.EARTH, 4).add(Aspect.WATER, 4).add(Aspect.PROTECT, 4));
 		evt.register.registerObjectTag(new ItemStack(ModBlocks.coquina), new AspectList().add(Aspect.EARTH, 4).add(Aspect.WATER, 4).add(Aspect.PROTECT, 4));
+		for (int i = 0; i < 4; i++) {
+			evt.register.registerObjectTag(new ItemStack(ModBlocks.coquina_chisel, 1, i), new AspectList().add(Aspect.EARTH, 4).add(Aspect.WATER, 4).add(Aspect.PROTECT, 4));
+		}
+		for (int i = 0; i < 11; i++) {
+			evt.register.registerObjectTag(new ItemStack(ModBlocks.nethersteel_chisel, 1, i), new AspectList().add(Aspect.FIRE, 5).add(Aspect.MAGIC, 5).add(Aspect.METAL, 5).add(DEMON, 10));
+		}
+		for (int i = 0; i < 9; i++) {
+			evt.register.registerObjectTag(new ItemStack(ModBlocks.cold_iron_block_chisel, 1, i), new AspectList().add(Aspect.AVERSION, 101).add(Aspect.COLD, 101).add(Aspect.METAL, 101));
+			evt.register.registerObjectTag(new ItemStack(ModBlocks.silver_block_chisel, 1, i), new AspectList().add(Aspect.METAL, 67).add(Aspect.DESIRE, 33).add(MOON, 20));
+		}
+		evt.register.registerObjectTag(new ItemStack(ModBlocks.graveyard_dirt), new AspectList().add(Aspect.EARTH, 5).add(Aspect.UNDEAD, 5));
+		evt.register.registerObjectTag(new ItemStack(ModBlocks.purifying_earth), new AspectList().add(Aspect.EARTH, 5).add(SUN, 5));
+		evt.register.registerObjectTag(new ItemStack(ModBlocks.infested_farmland), new AspectList().add(Aspect.EARTH, 5).add(Aspect.DEATH, 5));
 
 		//Ores
 		evt.register.registerObjectTag(new ItemStack(ModBlocks.gem_ore, 1, 0), new AspectList().add(Aspect.DESIRE, 4).add(Aspect.CRYSTAL, 4).add(Aspect.PROTECT, 4).add(Aspect.EARTH, 4).add(STAR, 4));
@@ -270,6 +287,12 @@ public class ThaumcraftCompat {
 		evt.register.registerObjectTag(new ItemStack(ModBlocks.sapling, 1, 2), new AspectList().add(Aspect.PLANT, 15).add(Aspect.LIFE, 5).add(Aspect.EXCHANGE, 3));
 		evt.register.registerObjectTag(new ItemStack(ModBlocks.sapling, 1, 3), new AspectList().add(Aspect.PLANT, 15).add(Aspect.LIFE, 5).add(Aspect.DEATH, 3));
 
+
+		//Brooms
+		for (int i = 0; i < 5; i++) {
+			evt.register.registerObjectTag(new ItemStack(ModItems.broom, 1, i), new AspectList().add(Aspect.PLANT, 35).add(Aspect.MAGIC, 35).add(Aspect.FLIGHT, 30).add(MOON, 25).add(STAR, 25));
+		}
+
 		//Technical
 		evt.register.registerObjectTag(new ItemStack(ModBlocks.salt_barrier), new AspectList().add(Aspect.PROTECT, 5).add(Aspect.EARTH, 5));
 
@@ -281,6 +304,7 @@ public class ThaumcraftCompat {
 		//If new aspects must be added to an item from vanilla, try and preserve as much of the original aspects as possible.
 		//The same applies if you try and add aspects to items from other mods.
 		evt.register.registerObjectTag(new ItemStack(Blocks.DOUBLE_PLANT, 1, 0), new AspectList().add(Aspect.PLANT, 5).add(Aspect.SENSES, 5).add(SUN, 3).add(Aspect.AIR, 1).add(Aspect.LIFE, 1));
+		evt.register.registerObjectTag(new ItemStack(Items.GOLD_INGOT), new AspectList().add(Aspect.METAL, 10).add(Aspect.DESIRE, 10).add(SUN, 5));
 
 		//Entities
 		ThaumcraftApi.registerEntityTag("entity_owl", new AspectList().add(Aspect.BEAST, 10).add(Aspect.FLIGHT, 10).add(MOON, 8));
@@ -291,6 +315,13 @@ public class ThaumcraftCompat {
 		ThaumcraftApi.registerEntityTag("entity_lizard", new AspectList().add(Aspect.BEAST, 10).add(Aspect.EARTH, 10).add(SUN, 8));
 		ThaumcraftApi.registerEntityTag("entity_newt", new AspectList().add(Aspect.BEAST, 10).add(Aspect.WATER, 10).add(Aspect.MOTION, 8));
 		ThaumcraftApi.registerEntityTag("entity_blindworm", new AspectList().add(Aspect.BEAST, 10).add(Aspect.EARTH, 10).add(Aspect.SENSES, 8));
+
+		ThaumcraftApi.registerEntityTag("entity_uran", new AspectList().add(Aspect.BEAST, 25).add(DEMON, 25).add(Aspect.DARKNESS, 16));
+		ThaumcraftApi.registerEntityTag("entity_hellhound", new AspectList().add(Aspect.BEAST, 25).add(DEMON, 25).add(Aspect.FIRE, 16));
+		ThaumcraftApi.registerEntityTag("entity_demon", new AspectList().add(Aspect.SOUL, 25).add(DEMON, 25).add(Aspect.FIRE, 16));
+		ThaumcraftApi.registerEntityTag("entity_demoness", new AspectList().add(Aspect.SOUL, 25).add(DEMON, 25).add(Aspect.FIRE, 16));
+		ThaumcraftApi.registerEntityTag("entity_imp", new AspectList().add(Aspect.SOUL, 25).add(DEMON, 25).add(Aspect.FIRE, 16));
+		ThaumcraftApi.registerEntityTag("entity_black_dog", new AspectList().add(Aspect.SOUL, 25).add(Aspect.BEAST, 25).add(Aspect.AVERSION, 16));
 
 	}
 }

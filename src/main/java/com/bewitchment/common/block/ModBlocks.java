@@ -1,11 +1,5 @@
 package com.bewitchment.common.block;
 
-import com.bewitchment.common.block.chisel.BlockColdIronChiseled;
-import com.bewitchment.common.block.chisel.BlockColdIronChiseled.BlockColdIronVariant;
-import com.bewitchment.common.block.chisel.BlockNetherSteelChiseled;
-import com.bewitchment.common.block.chisel.BlockNetherSteelChiseled.BlockSteelVariant;
-import com.bewitchment.common.block.chisel.BlockSilverChiseled;
-import com.bewitchment.common.block.chisel.BlockSilverChiseled.BlockSilverVariant;
 import com.bewitchment.common.block.decorations.*;
 import com.bewitchment.common.block.misc.*;
 import com.bewitchment.common.block.natural.*;
@@ -21,15 +15,18 @@ import com.bewitchment.common.block.natural.tree.BlockModSapling;
 import com.bewitchment.common.block.natural.tree.BlockPlanks;
 import com.bewitchment.common.block.tiles.*;
 import com.bewitchment.common.crafting.VanillaCrafting;
+import com.bewitchment.common.integration.chisel.*;
+import com.bewitchment.common.integration.chisel.BlockColdIronChiseled.BlockColdIronVariant;
+import com.bewitchment.common.integration.chisel.BlockNetherSteelChiseled.BlockSteelVariant;
+import com.bewitchment.common.integration.chisel.BlockSilverChiseled.BlockSilverVariant;
 import com.bewitchment.common.item.ModItems;
 import com.bewitchment.common.lib.LibBlockName;
 import com.bewitchment.common.lib.LibMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.IFluidBlock;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -89,6 +86,11 @@ public final class ModBlocks {
 	public static final Block fake_ice_slab_half = null;
 	public static final Block fake_ice_slab_double = null;
 	public static final Block scorned_brick_stairs = null;
+	public static final Block embittered_brick_stairs = null;
+	public static final Block elder_stairs = null;
+	public static final Block juniper_stairs = null;
+	public static final Block yew_stairs = null;
+	public static final Block cypress_stairs = null;
 	public static final Block torchwood = null;
 	public static final Block ember_grass = null;
 	public static final Block log_elder = null;
@@ -110,6 +112,7 @@ public final class ModBlocks {
 	public static final Block ritual_glyphs = null;
 	public static final Block crystal_ball = null;
 	public static final Block embittered_bricks = null;
+	public static final Block embittered_brick_fence = null;
 	public static final Block scorned_bricks = null;
 	public static final Block scorned_brick_fence = null;
 	public static final Block goblet = null;
@@ -131,17 +134,22 @@ public final class ModBlocks {
 	public static final Block silver_block_chisel = null;
 	public static final Block cold_iron_block_chisel = null;
 	public static final Block nethersteel_chisel = null;
+	public static final Block coquina_chisel = null;
+	public static final Block scorned_bricks_chisel = null;
 
-	private static Block STAIRS_ICE = new Block(Material.ICE);
-	private static Block STAIRS_SCORNED_BRICK = new Block(Material.ROCK);
+	private static Block STAIRS_BW_ICE = new Block(Material.ICE);
+	private static Block STAIRS_BW_STONE = new Block(Material.ROCK);
+	private static Block STAIRS_BW_METAL = new Block(Material.IRON);
+	private static Block STAIRS_BW_GLASS = new Block(Material.GLASS);
+	private static Block STAIRS_BW_WOOD = new Block(Material.WOOD);
 
 	private ModBlocks() {
 
 	}
 
 	public static void register(final IForgeRegistry<Block> registry) {
-		for (final IFluidBlock fluidBlock : Fluids.MOD_FLUID_BLOCKS) {
-			registry.register((Block) fluidBlock);
+		for (final Block fluidBlock : Fluids.MOD_FLUID_BLOCKS) {
+			registry.register(fluidBlock);
 		}
 		//Crops
 		//Todo: Make the rest of the crops flammable.
@@ -157,8 +165,8 @@ public final class ModBlocks {
 				new BlockCrop(LibBlockName.CROP_HELLEBORE),
 				new BlockCrop(LibBlockName.CROP_CHRYSANTHEMUM),
 				new BlockCrop(LibBlockName.CROP_SAGEBRUSH),
+				new BlockCrop(LibBlockName.CROP_WORMWOOD),
 				new BlockCrop(LibBlockName.CROP_INFESTED_WHEAT),
-				new CropWormwood(),
 				new CropSilphium(),
 				new CropKenaf(),
 				new CropThistle(),
@@ -192,13 +200,19 @@ public final class ModBlocks {
 				new BlockFakeIce(),
 				new BlockFakeIceFence(),
 				new BlockScornedBrickFence(),
-				new BlockFakeIceStairs("fake_ice_stairs", STAIRS_ICE.getDefaultState(), Material.ICE),
-				new BlockScornedBrickStairs("scorned_brick_stairs", STAIRS_SCORNED_BRICK.getDefaultState(), Material.ROCK),
+				new BlockEmbitteredBrickFence(),
+				new BlockFakeIceStairs("fake_ice_stairs", STAIRS_BW_ICE.getDefaultState(), Material.ICE),
+				new BlockScornedBrickStairs("scorned_brick_stairs", STAIRS_BW_STONE.getDefaultState(), Material.ROCK),
+				new BlockEmbitteredBrickStairs("embittered_brick_stairs", STAIRS_BW_STONE.getDefaultState(), Material.ROCK),
+				new BlockWoodStairs("elder_stairs", STAIRS_BW_WOOD.getDefaultState(), Material.WOOD),
+				new BlockWoodStairs("juniper_stairs", STAIRS_BW_WOOD.getDefaultState(), Material.WOOD),
+				new BlockWoodStairs("yew_stairs", STAIRS_BW_WOOD.getDefaultState(), Material.WOOD),
+				new BlockWoodStairs("cypress_stairs", STAIRS_BW_WOOD.getDefaultState(), Material.WOOD),
 				new BlockFakeIceSlabDouble("fake_ice_slab_double"),
 				new BlockFakeIceSlabHalf("fake_ice_slab_half"),
 				new BlockBeehive(LibBlockName.BEEHIVE, Material.GRASS),
 				new BlockWitchAltar(LibBlockName.WITCH_ALTAR, Material.ROCK),
-				new BlockThreadSpinner(LibBlockName.THREAD_SPINNER),
+				new BlockLoom(LibBlockName.THREAD_SPINNER),
 				new BlockCircleGlyph(LibBlockName.GLYPHS),
 				new BlockCrystalBall(LibBlockName.CRYSTAL_BALL),
 				new BlockGoblet(LibBlockName.GOBLET),
@@ -218,7 +232,9 @@ public final class ModBlocks {
 				new BlockMod(LibBlockName.SILVER_BLOCK, Material.IRON, SoundType.METAL).setHardness(5.0F),
 				new BlockSilverChiseled(Material.IRON, SoundType.METAL).setHardness(5.0F),
 				new BlockColdIronChiseled(Material.IRON, SoundType.METAL).setHardness(5.0F),
+				new BlockCoquinaChiseled(Material.ROCK, SoundType.STONE).setHardness(3.0F),
 				new BlockNetherSteelChiseled(Material.IRON, SoundType.METAL).setHardness(5.0F),
+				new BlockScornedBricksChiseled(Material.ROCK, SoundType.STONE).setHardness(5.0F),
 				new BlockMod(LibBlockName.COLD_IRON_BLOCK, Material.IRON, SoundType.METAL).setHardness(5.0F),
 				new BlockMod(LibBlockName.NETHERSTEEL, Material.IRON, SoundType.METAL).setHardness(5.0F),
 				new BlockGem(),
@@ -249,7 +265,48 @@ public final class ModBlocks {
 	public static void init() {
 		VanillaCrafting.blocks();
 		initOreDictionary();
+		//Silver is supported by default.
+		FMLInterModComms.sendMessage("chisel", "variation:add", "coquina|bewitchment:coquina|0");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "coquina|bewitchment:coquina_chisel|0");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "coquina|bewitchment:coquina_chisel|1");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "coquina|bewitchment:coquina_chisel|2");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "coquina|bewitchment:coquina_chisel|3");
+
+		FMLInterModComms.sendMessage("chisel", "variation:add", "cold_iron|bewitchment:cold_iron_block|0");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "cold_iron|bewitchment:cold_iron_block_chisel|0");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "cold_iron|bewitchment:cold_iron_block_chisel|1");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "cold_iron|bewitchment:cold_iron_block_chisel|2");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "cold_iron|bewitchment:cold_iron_block_chisel|3");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "cold_iron|bewitchment:cold_iron_block_chisel|4");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "cold_iron|bewitchment:cold_iron_block_chisel|5");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "cold_iron|bewitchment:cold_iron_block_chisel|6");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "cold_iron|bewitchment:cold_iron_block_chisel|7");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "cold_iron|bewitchment:cold_iron_block_chisel|8");
+
+		FMLInterModComms.sendMessage("chisel", "variation:add", "nethersteel|bewitchment:nethersteel|0");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "nethersteel|bewitchment:nethersteel_chisel|0");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "nethersteel|bewitchment:nethersteel_chisel|1");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "nethersteel|bewitchment:nethersteel_chisel|2");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "nethersteel|bewitchment:nethersteel_chisel|3");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "nethersteel|bewitchment:nethersteel_chisel|4");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "nethersteel|bewitchment:nethersteel_chisel|5");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "nethersteel|bewitchment:nethersteel_chisel|6");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "nethersteel|bewitchment:nethersteel_chisel|7");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "nethersteel|bewitchment:nethersteel_chisel|8");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "nethersteel|bewitchment:nethersteel_chisel|9");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "nethersteel|bewitchment:nethersteel_chisel|10");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "nethersteel|bewitchment:nethersteel_chisel|11");
+
+		FMLInterModComms.sendMessage("chisel", "variation:add", "scorn|bewitchment:scorned_bricks|0");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "scorn|bewitchment:scorned_bricks_chisel|0");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "scorn|bewitchment:scorned_bricks_chisel|1");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "scorn|bewitchment:scorned_bricks_chisel|2");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "scorn|bewitchment:scorned_bricks_chisel|3");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "scorn|bewitchment:scorned_bricks_chisel|4");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "scorn|bewitchment:scorned_bricks_chisel|5");
+		FMLInterModComms.sendMessage("chisel", "variation:add", "scorn|bewitchment:scorned_bricks_chisel|6");
 	}
+
 
 	private static void initOreDictionary() {
 		//Crystals, Minerals, and Metals
@@ -277,15 +334,16 @@ public final class ModBlocks {
 		OreDictionary.registerOre("blockAmethyst", new ItemStack(ModBlocks.gem_block, 1, 7));
 		OreDictionary.registerOre("blockAlexandrite", new ItemStack(ModBlocks.gem_block, 1, 8));
 		OreDictionary.registerOre("oreGarnet", new ItemStack(ModBlocks.gem_ore, 1, 0));
-		OreDictionary.registerOre("oreNuummite", new ItemStack(ModBlocks.gem_ore, 1, 2));
-		OreDictionary.registerOre("oreAmethyst", new ItemStack(ModBlocks.gem_ore, 1, 8));
-		OreDictionary.registerOre("oreAlexandrite", new ItemStack(ModBlocks.gem_ore, 1, 9));
+		OreDictionary.registerOre("oreNuummite", new ItemStack(ModBlocks.gem_ore, 1, 1));
+		OreDictionary.registerOre("oreAmethyst", new ItemStack(ModBlocks.gem_ore, 1, 7));
+		OreDictionary.registerOre("oreAlexandrite", new ItemStack(ModBlocks.gem_ore, 1, 8));
 		OreDictionary.registerOre("oreSilver", new ItemStack(ModBlocks.silver_ore));
-		OreDictionary.registerOre("oreBloodstone", new ItemStack(ModBlocks.gem_ore, 1, 5));
-		OreDictionary.registerOre("oreTourmaline", new ItemStack(ModBlocks.gem_ore, 1, 4));
-		OreDictionary.registerOre("oreMalachite", new ItemStack(ModBlocks.gem_ore, 1, 7));
-		OreDictionary.registerOre("oreTigersEye", new ItemStack(ModBlocks.gem_ore, 1, 3));
-		OreDictionary.registerOre("oreJasper", new ItemStack(ModBlocks.gem_ore, 1, 6));
+		OreDictionary.registerOre("oreSalt", new ItemStack(ModBlocks.salt_ore));
+		OreDictionary.registerOre("oreBloodstone", new ItemStack(ModBlocks.gem_ore, 1, 4));
+		OreDictionary.registerOre("oreTourmaline", new ItemStack(ModBlocks.gem_ore, 1, 3));
+		OreDictionary.registerOre("oreMalachite", new ItemStack(ModBlocks.gem_ore, 1, 6));
+		OreDictionary.registerOre("oreTigersEye", new ItemStack(ModBlocks.gem_ore, 1, 2));
+		OreDictionary.registerOre("oreJasper", new ItemStack(ModBlocks.gem_ore, 1, 5));
 		OreDictionary.registerOre("blockNethersteel", new ItemStack(ModBlocks.nethersteel));
 		OreDictionary.registerOre("oreSalt", new ItemStack(ModBlocks.salt_ore));
 		//Candles
@@ -293,24 +351,6 @@ public final class ModBlocks {
 			OreDictionary.registerOre("blockCandle", new ItemStack(ModBlocks.candle_small, 1, i));
 			OreDictionary.registerOre("blockCandle", new ItemStack(ModBlocks.candle_medium, 1, i));
 		}
-
-		//Wool oredicts, used for coloring brews
-		OreDictionary.registerOre("blockWoolWHITE", new ItemStack(Blocks.WOOL, 1, 0));
-		OreDictionary.registerOre("blockWoolORANGE", new ItemStack(Blocks.WOOL, 1, 1));
-		OreDictionary.registerOre("blockWoolMAGENTA", new ItemStack(Blocks.WOOL, 1, 2));
-		OreDictionary.registerOre("blockWoolLIGHT_BLUE", new ItemStack(Blocks.WOOL, 1, 3));
-		OreDictionary.registerOre("blockWoolYELLOW", new ItemStack(Blocks.WOOL, 1, 4));
-		OreDictionary.registerOre("blockWoolLIME", new ItemStack(Blocks.WOOL, 1, 5));
-		OreDictionary.registerOre("blockWoolPINK", new ItemStack(Blocks.WOOL, 1, 6));
-		OreDictionary.registerOre("blockWoolGRAY", new ItemStack(Blocks.WOOL, 1, 7));
-		OreDictionary.registerOre("blockWoolSILVER", new ItemStack(Blocks.WOOL, 1, 8));
-		OreDictionary.registerOre("blockWoolCYAN", new ItemStack(Blocks.WOOL, 1, 9));
-		OreDictionary.registerOre("blockWoolPURPLE", new ItemStack(Blocks.WOOL, 1, 10));
-		OreDictionary.registerOre("blockWoolBLUE", new ItemStack(Blocks.WOOL, 1, 11));
-		OreDictionary.registerOre("blockWoolBROWN", new ItemStack(Blocks.WOOL, 1, 12));
-		OreDictionary.registerOre("blockWoolGREEN", new ItemStack(Blocks.WOOL, 1, 13));
-		OreDictionary.registerOre("blockWoolRED", new ItemStack(Blocks.WOOL, 1, 14));
-		OreDictionary.registerOre("blockWoolBLACK", new ItemStack(Blocks.WOOL, 1, 15));
 
 		//Imported oredicts
 		OreDictionary.registerOre("logWood", ModBlocks.log_elder);
@@ -326,6 +366,9 @@ public final class ModBlocks {
 		OreDictionary.registerOre("treeLeaves", ModBlocks.leaves_yew);
 		OreDictionary.registerOre("treeLeaves", ModBlocks.leaves_cypress);
 		OreDictionary.registerOre("treeSapling", ModBlocks.sapling);
+		OreDictionary.registerOre("treeSapling", new ItemStack(ModBlocks.sapling, 1, 1));
+		OreDictionary.registerOre("treeSapling", new ItemStack(ModBlocks.sapling, 1, 2));
+		OreDictionary.registerOre("treeSapling", new ItemStack(ModBlocks.sapling, 1, 3));
 
 		// Misc
 		OreDictionary.registerOre("kelp", ModItems.kelp);

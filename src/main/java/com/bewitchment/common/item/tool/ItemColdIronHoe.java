@@ -8,6 +8,7 @@ import com.bewitchment.common.core.statics.ModCreativeTabs;
 import com.bewitchment.common.integration.thaumcraft.ThaumcraftCompatBridge;
 import com.bewitchment.common.item.ModMaterials;
 import com.bewitchment.common.lib.LibItemName;
+import com.bewitchment.common.lib.LibMod;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
@@ -33,9 +34,8 @@ public class ItemColdIronHoe extends ItemHoe implements IModelRegister {
 
 	public ItemColdIronHoe() {
 		super(ModMaterials.TOOL_COLD_IRON);
-		this.setMaxStackSize(1);
 		setRegistryName(LibItemName.COLD_IRON_HOE);
-		setTranslationKey(LibItemName.COLD_IRON_HOE);
+		setTranslationKey(LibMod.MOD_ID + "." + LibItemName.COLD_IRON_HOE);
 		setCreativeTab(ModCreativeTabs.ITEMS_CREATIVE_TAB);
 	}
 
@@ -53,14 +53,10 @@ public class ItemColdIronHoe extends ItemHoe implements IModelRegister {
 		return true;
 	}
 
-	public String getNameInefficiently(ItemStack stack) {
-		return getTranslationKey().substring(5);
-	}
-
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, @Nullable World player, List<String> tooltip, ITooltipFlag advanced) {
-		tooltip.add(TextFormatting.GRAY + I18n.format("witch.tooltip." + getNameInefficiently(stack) + "_description.name"));
+		tooltip.add(TextFormatting.GRAY + I18n.format("tooltip.bewitchment." + getMaterialName() + "_tool" + "_description.name"));
 	}
 
 	@SideOnly(Side.CLIENT)

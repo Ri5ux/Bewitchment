@@ -33,8 +33,7 @@ public class ItemFilledBowl extends ItemModFood {
 			stack.setTagCompound(new NBTTagCompound()); //not really supposed to happen ingame since you only get the stews with NBT values assigned but it prevents crashing
 		}
 		final FoodStats foodStats = player.getFoodStats();
-		foodStats.setFoodLevel(foodStats.getFoodLevel() + stack.getTagCompound().getInteger("hunger"));
-		foodStats.setFoodSaturationLevel(foodStats.getFoodLevel() + stack.getTagCompound().getFloat("saturation"));
+		foodStats.addStats(stack.getTagCompound().getInteger("hunger"), stack.getTagCompound().getFloat("saturation"));
 		player.addItemStackToInventory(new ItemStack(Items.BOWL, 1));
 	}
 
@@ -45,15 +44,15 @@ public class ItemFilledBowl extends ItemModFood {
 			NBTTagCompound nbt = stack.getTagCompound();
 			if (nbt.getInteger("hunger") > 0) {
 				float roundedSaturation = Math.round(nbt.getFloat("saturation") * 10) / 10;
-				tooltip.add(I18n.format("item.stew.description.generic"));
+				tooltip.add(I18n.format("item.bewitchment.stew.description.generic"));
 				if (GuiScreen.isShiftKeyDown()) {
-					tooltip.add(I18n.format("item.stew.description.precise", nbt.getInteger("hunger"), roundedSaturation));
+					tooltip.add(I18n.format("item.bewitchment.stew.description.precise", nbt.getInteger("hunger"), roundedSaturation));
 				}
 			} else {
-				tooltip.add(I18n.format("item.stew.description.empty"));
+				tooltip.add(I18n.format("item.bewitchment.stew.description.empty"));
 			}
 		} else {
-			tooltip.add(I18n.format("item.stew.description.empty"));
+			tooltip.add(I18n.format("item.bewitchment.stew.description.empty"));
 		}
 	}
 }

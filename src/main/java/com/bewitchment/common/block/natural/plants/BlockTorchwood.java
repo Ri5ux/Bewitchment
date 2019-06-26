@@ -8,9 +8,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -39,6 +41,12 @@ public class BlockTorchwood extends BlockMod implements IGrowable, IPlantable {
 		setCreativeTab(ModCreativeTabs.PLANTS_CREATIVE_TAB);
 	}
 
+	@SuppressWarnings("deprecation")
+	@Override
+	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+		return BlockFaceShape.UNDEFINED;
+	}
+
 	@Override
 	public boolean isFullCube(IBlockState state) {
 		return false;
@@ -55,7 +63,7 @@ public class BlockTorchwood extends BlockMod implements IGrowable, IPlantable {
 	}
 
 	public boolean canSustainBush(IBlockState state) {
-		return state.getBlock() == Blocks.GRASS || state.getBlock() == Blocks.DIRT || state.getBlock() == Blocks.STONE || state.getBlock() == Blocks.FARMLAND || state.getBlock() == ModBlocks.coquina || state.getBlock() == Blocks.SAND || state.getBlock() == Blocks.GRAVEL || state.getBlock() == Blocks.COBBLESTONE || state.getBlock() == Blocks.NETHERRACK || state.getBlock() == Blocks.END_STONE || state.getBlock() == this;
+		return state.getBlock() == Blocks.GRASS || state.getBlock() == Blocks.DIRT || state.getBlock() == Blocks.STONE || state.getBlock() == Blocks.FARMLAND || state.getBlock() == ModBlocks.coquina || state.getBlock() == Blocks.SAND || state.getBlock() == Blocks.GRAVEL || state.getBlock() == Blocks.COBBLESTONE || state.getBlock() == Blocks.NETHERRACK || state.getBlock() == Blocks.END_STONE || state.getBlock() == Blocks.MYCELIUM || state.getBlock() == this;
 	}
 
 	protected void checkAndDropBlock(World worldIn, BlockPos pos, IBlockState state) {

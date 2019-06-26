@@ -4,6 +4,7 @@ import com.bewitchment.api.ritual.IRitual;
 import com.bewitchment.common.lib.LibMod;
 import com.bewitchment.common.tile.tiles.TileEntityGlyph;
 import com.google.common.collect.Lists;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -14,6 +15,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -22,6 +25,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public class AdapterIRitual implements IForgeRegistryEntry<AdapterIRitual> {
 
@@ -86,6 +90,11 @@ public class AdapterIRitual implements IForgeRegistryEntry<AdapterIRitual> {
 		return ritual.getOutput(input, data);
 	}
 
+	@SideOnly(Side.CLIENT)
+	public void spawnParticles(World world, BlockPos glyphPos, BlockPos effectivePos, Random rng) {
+		this.ritual.onRandomDisplayTick(world, glyphPos, effectivePos, rng);
+	}
+
 	public boolean isValidInput(List<ItemStack> ground, boolean circles) {
 		ArrayList<ItemStack> checklist = new ArrayList<ItemStack>(ground.size());
 		for (ItemStack item : ground)
@@ -119,6 +128,13 @@ public class AdapterIRitual implements IForgeRegistryEntry<AdapterIRitual> {
 		return circles;
 	}
 
+	public boolean isValidInput(List<ItemStack> ground, List<Entity> sacrifices, boolean circles) {
+		if (!isValidInput(ground, circles)) return false;
+		for (Entity e : sacrifices)
+			if (ritual.getSacrifices().contains(e.getClass())) return true;
+		return false;
+	}
+
 	public int getCircles() {
 		return ritual.getCircles();
 	}
@@ -133,6 +149,10 @@ public class AdapterIRitual implements IForgeRegistryEntry<AdapterIRitual> {
 
 	public NonNullList<Ingredient> getInput() {
 		return ritual.getInput();
+	}
+
+	public NonNullList<Class<? extends Entity>> getSacrifices() {
+		return ritual.getSacrifices();
 	}
 
 	public List<List<ItemStack>> getJeiInput() {

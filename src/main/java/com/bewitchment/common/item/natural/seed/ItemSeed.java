@@ -3,6 +3,7 @@ package com.bewitchment.common.item.natural.seed;
 import com.bewitchment.client.core.IModelRegister;
 import com.bewitchment.client.handler.ModelHandler;
 import com.bewitchment.common.core.statics.ModCreativeTabs;
+import com.bewitchment.common.lib.LibMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -34,7 +35,7 @@ public class ItemSeed extends ItemSeeds implements IModelRegister {
 	public ItemSeed(String id, Block crop, Block soil) {
 		super(crop, soil);
 		setRegistryName(id);
-		setTranslationKey(id);
+		setTranslationKey(LibMod.MOD_ID + "." + id);
 		setCreativeTab(ModCreativeTabs.PLANTS_CREATIVE_TAB);
 		this.crop = crop;
 		this.soil = soil;
@@ -43,7 +44,7 @@ public class ItemSeed extends ItemSeeds implements IModelRegister {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, @Nullable World player, List<String> tooltip, ITooltipFlag advanced) {
-		tooltip.add(TextFormatting.ITALIC + I18n.format("witch.tooltip." + getNameInefficiently(stack) + "_description.name"));
+		tooltip.add(TextFormatting.ITALIC + I18n.format("tooltip." + getNameInefficiently(stack) + "_description.name"));
 	}
 
 	public String getNameInefficiently(ItemStack stack) {

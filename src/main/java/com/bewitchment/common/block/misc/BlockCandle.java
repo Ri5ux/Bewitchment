@@ -4,11 +4,13 @@ import com.bewitchment.client.handler.ModelHandler;
 import com.bewitchment.common.Bewitchment;
 import com.bewitchment.common.block.BlockMod;
 import com.bewitchment.common.block.ModBlocks;
+import com.bewitchment.common.integration.optifine.Optifine;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -41,7 +43,7 @@ import java.util.Random;
 @Optional.Interface(iface = "thaumcraft.api.crafting.IInfusionStabiliserExt", modid = "thaumcraft")
 public abstract class BlockCandle extends BlockMod implements IInfusionStabiliserExt {
 
-	private boolean isLit;
+	private boolean isLit; // it's lit fam -its_meow
 
 	public BlockCandle(String id, boolean lit) {
 		super(id, Material.CLOTH);
@@ -51,6 +53,12 @@ public abstract class BlockCandle extends BlockMod implements IInfusionStabilise
 		if (isLit) {
 			setCreativeTab(null); // No need for them to appear twice
 		}
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+		return BlockFaceShape.UNDEFINED;
 	}
 
 	@Override
@@ -169,6 +177,9 @@ public abstract class BlockCandle extends BlockMod implements IInfusionStabilise
 
 	@Override
 	public EnumOffsetType getOffsetType() {
+		if (Optifine.isLoaded()) {
+			return EnumOffsetType.NONE;
+		}
 		return EnumOffsetType.XZ;
 	}
 
@@ -200,7 +211,7 @@ public abstract class BlockCandle extends BlockMod implements IInfusionStabilise
 	@Override
 	@Optional.Method(modid = "thaumcraft")
 	public float getStabilizationAmount(World world, BlockPos pos) {
-		return 0;
+		return 4;
 	}
 
 }

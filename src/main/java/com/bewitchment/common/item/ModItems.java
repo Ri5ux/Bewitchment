@@ -2,18 +2,13 @@ package com.bewitchment.common.item;
 
 import baubles.api.BaubleType;
 import com.bewitchment.common.block.ModBlocks;
-import com.bewitchment.common.block.chisel.BlockColdIronChiseled;
-import com.bewitchment.common.block.chisel.BlockNetherSteelChiseled;
-import com.bewitchment.common.block.chisel.BlockSilverChiseled;
 import com.bewitchment.common.block.natural.BlockGemOre.Gem;
-import com.bewitchment.common.block.natural.fluid.Fluids;
 import com.bewitchment.common.core.helper.CropHelper;
 import com.bewitchment.common.core.statics.ModCreativeTabs;
+import com.bewitchment.common.integration.chisel.*;
 import com.bewitchment.common.item.block.*;
 import com.bewitchment.common.item.block.ItemBlockMeta.EnumNameMode;
-import com.bewitchment.common.item.equipment.ItemSilverArmor;
-import com.bewitchment.common.item.equipment.ItemVampireArmor;
-import com.bewitchment.common.item.equipment.ItemWitchesArmor;
+import com.bewitchment.common.item.equipment.*;
 import com.bewitchment.common.item.equipment.baubles.*;
 import com.bewitchment.common.item.food.*;
 import com.bewitchment.common.item.magic.*;
@@ -31,7 +26,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemSlab;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.common.LoaderException;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.oredict.OreDictionary;
@@ -197,7 +191,10 @@ public final class ModItems {
 	public static final Item tarots = null;
 	public static final Item broom = null;
 	public static final Item spell_page = null;
-	public static final Item ritual_chalk = null;
+	public static final Item ritual_chalk_normal = null;
+	public static final Item ritual_chalk_golden = null;
+	public static final Item ritual_chalk_ender = null;
+	public static final Item ritual_chalk_nether = null;
 	public static final Item location_stone = null;
 	public static final Item knowledge_fragment = null;
 
@@ -210,6 +207,10 @@ public final class ModItems {
 	public static final Item lizard_leg = null;
 	public static final Item blindworms_sting = null;
 
+	public static final Item uranid_venom = null;
+	public static final Item hellhound_horn = null;
+	public static final Item demon_heart = null;
+
 	public static final Item pentacle = null;
 
 	public static final Item cold_iron_sword = null;
@@ -217,7 +218,10 @@ public final class ModItems {
 	public static final Item cold_iron_hoe = null;
 	public static final Item cold_iron_spade = null;
 	public static final Item cold_iron_pickaxe = null;
-
+	public static final Item cold_iron_helmet = null;
+	public static final Item cold_iron_chestplate = null;
+	public static final Item cold_iron_leggings = null;
+	public static final Item cold_iron_boots = null;
 
 	private ModItems() {
 	}
@@ -225,9 +229,6 @@ public final class ModItems {
 	public static void register(final IForgeRegistry<Item> registry) {
 		CropHelper.getFoods().forEach((crop, item) -> registry.register(item));
 		CropHelper.getSeeds().forEach((crop, item) -> registry.register(item));
-		for (final IFluidBlock fluidBlock : Fluids.MOD_FLUID_BLOCKS) {
-			registry.register(itemBlock((Block) fluidBlock));
-		}
 		registry.register(new ItemGem());
 		// registry.register(new ItemFume());
 		registry.register(new ItemFumes(LibItemName.FUME));
@@ -247,8 +248,8 @@ public final class ModItems {
 				new ItemMod(LibItemName.WAX),
 				new ItemMod(LibItemName.HONEYCOMB),
 				new ItemMod(LibItemName.EMPTY_HONEYCOMB),
-				new ItemMod(LibItemName.MORTAR_AND_PESTLE),
-				new ItemMod(LibItemName.MORTAR_AND_PESTLE_STONE),
+				new ItemWoodenMortarAndPestle(),
+				new ItemStoneMortarAndPestle(),
 				new ItemBrewDrinkable(),
 				new ItemBrewThrowable(LibItemName.BREW_PHIAL_SPLASH),
 				new ItemBrewThrowable(LibItemName.BREW_PHIAL_LINGER),
@@ -266,6 +267,7 @@ public final class ModItems {
 				new ItemMod(LibItemName.WOOD_ASH),
 				new ItemMod(LibItemName.ECTOPLASM),
 				new ItemMod(LibItemName.SPECTRAL_DUST),
+				new ItemMod(LibItemName.DEMON_HEART),
 				new ItemMod(LibItemName.SILVER_SCALES),
 				new ItemEyeOfOld(),
 				new ItemMod(LibItemName.ENVENOMED_FANG),
@@ -301,12 +303,17 @@ public final class ModItems {
 				new ItemMod(LibItemName.EYE_OF_NEWT),
 				new ItemMod(LibItemName.QUARTZ_POWDER),
 				new ItemMod(LibItemName.LAPIS_POWDER),
+				new ItemMod(LibItemName.URANID_VENOM),
+				new ItemMod(LibItemName.HELLHOUND_HORN),
 				new ItemHeart(),
 				new ItemGrilledWatermelon(),
 				new ItemJuniperBerries(),
 				new ItemYewAril(),
 				new ItemFilledBowl(),
-				new ItemRitualChalk(LibItemName.RITUAL_CHALK),
+				new ItemRitualChalk(LibItemName.RITUAL_CHALK + "_normal"),
+				new ItemRitualChalk(LibItemName.RITUAL_CHALK + "_golden"),
+				new ItemRitualChalk(LibItemName.RITUAL_CHALK + "_ender"),
+				new ItemRitualChalk(LibItemName.RITUAL_CHALK + "_nether"),
 				new ItemRemedyTalisman(),
 				new ItemMagicSalve(),
 				new ItemLocationStone(),
@@ -353,7 +360,12 @@ public final class ModItems {
 				new ItemColdIronAxe(),
 				new ItemColdIronHoe(),
 				new ItemColdIronPickaxe(),
-				new ItemColdIronSpade()
+				new ItemColdIronSpade(),
+				new ItemWitchesCowl(LibItemName.WITCHES_COWL, ModMaterials.ARMOR_BEWITCHED_HOOD, 1, EntityEquipmentSlot.HEAD),
+				new ItemColdIronArmor(LibItemName.COLD_IRON_HELMET, ModMaterials.ARMOR_COLD_IRON, 1, EntityEquipmentSlot.HEAD),
+				new ItemColdIronArmor(LibItemName.COLD_IRON_CHESTPLATE, ModMaterials.ARMOR_COLD_IRON, 1, EntityEquipmentSlot.CHEST),
+				new ItemColdIronArmor(LibItemName.COLD_IRON_LEGGINGS, ModMaterials.ARMOR_COLD_IRON, 2, EntityEquipmentSlot.LEGS),
+				new ItemColdIronArmor(LibItemName.COLD_IRON_BOOTS, ModMaterials.ARMOR_COLD_IRON, 1, EntityEquipmentSlot.FEET)
 		);
 		// Item Blocks
 		registry.registerAll(
@@ -366,6 +378,12 @@ public final class ModItems {
 				itemBlock(ModBlocks.scorned_bricks),
 				itemBlock(ModBlocks.scorned_brick_fence),
 				itemBlock(ModBlocks.scorned_brick_stairs),
+				itemBlock(ModBlocks.embittered_brick_stairs),
+				itemBlock(ModBlocks.embittered_brick_fence),
+				itemBlock(ModBlocks.cypress_stairs),
+				itemBlock(ModBlocks.yew_stairs),
+				itemBlock(ModBlocks.juniper_stairs),
+				itemBlock(ModBlocks.elder_stairs),
 
 				new ItemGemOre(ModBlocks.gem_ore).setCreativeTab(ModCreativeTabs.BLOCKS_CREATIVE_TAB),
 				new ItemSlab(ModBlocks.fake_ice_slab_half, (BlockSlab) ModBlocks.fake_ice_slab_half, (BlockSlab) ModBlocks.fake_ice_slab_double).setRegistryName(ModBlocks.fake_ice_slab_half.getRegistryName()),
@@ -417,7 +435,9 @@ public final class ModItems {
 		registry.registerAll(
 				new ItemBlockMeta<>(ModBlocks.silver_block_chisel, BlockSilverChiseled.BlockSilverVariant.values(), EnumNameMode.TOOLTIP),
 				new ItemBlockMeta<>(ModBlocks.cold_iron_block_chisel, BlockColdIronChiseled.BlockColdIronVariant.values(), EnumNameMode.TOOLTIP),
-				new ItemBlockMeta<>(ModBlocks.nethersteel_chisel, BlockNetherSteelChiseled.BlockSteelVariant.values(), EnumNameMode.TOOLTIP)
+				new ItemBlockMeta<>(ModBlocks.nethersteel_chisel, BlockNetherSteelChiseled.BlockSteelVariant.values(), EnumNameMode.TOOLTIP),
+				new ItemBlockMeta<>(ModBlocks.coquina_chisel, BlockCoquinaChiseled.BlockCoquinaVariant.values(), EnumNameMode.TOOLTIP),
+				new ItemBlockMeta<>(ModBlocks.scorned_bricks_chisel, BlockScornedBricksChiseled.BlockScornVariant.values(), EnumNameMode.TOOLTIP)
 		);
 
 	}
@@ -449,7 +469,7 @@ public final class ModItems {
 		OreDictionary.registerOre("gemTigersEye", new ItemStack(ModItems.gem, 1, Gem.TIGERS_EYE.ordinal()));
 		OreDictionary.registerOre("gemJasper", new ItemStack(ModItems.gem, 1, Gem.JASPER.ordinal()));
 		OreDictionary.registerOre("gemMalachite", new ItemStack(ModItems.gem, 1, Gem.MALACHITE.ordinal()));
-		OreDictionary.registerOre("gemAmethyst", new ItemStack(ModItems.gem, 1, Gem.AMETHYST.ordinal()));
+		OreDictionary.registerOre("gemAmethyst", new ItemStack(ModItems.gem, 1, Gem.BW_AMETHYST.ordinal()));
 		OreDictionary.registerOre("gemAlexandrite", new ItemStack(ModItems.gem, 1, Gem.ALEXANDRITE.ordinal()));
 		OreDictionary.registerOre("nuggetSilver", new ItemStack(ModItems.silver_nugget));
 		OreDictionary.registerOre("ingotSilver", new ItemStack(ModItems.silver_ingot));
@@ -461,6 +481,11 @@ public final class ModItems {
 		OreDictionary.registerOre("materialBeeswax", new ItemStack(ModItems.wax));
 		OreDictionary.registerOre("materialPressedWax", new ItemStack(ModItems.wax));
 		OreDictionary.registerOre("itemBeeswax", new ItemStack(ModItems.wax));
+		OreDictionary.registerOre("wax", new ItemStack(ModItems.wax));
+		OreDictionary.registerOre("tallow", new ItemStack(ModItems.wax));
+		OreDictionary.registerOre("clumpWax", new ItemStack(ModItems.wax));
+		OreDictionary.registerOre("beeswax", new ItemStack(ModItems.wax));
+		OreDictionary.registerOre("itemWax", new ItemStack(ModItems.wax));
 		OreDictionary.registerOre("foodSalt", new ItemStack(ModItems.salt));
 		OreDictionary.registerOre("dustSalt", new ItemStack(ModItems.salt));
 		OreDictionary.registerOre("materialSalt", new ItemStack(ModItems.salt));
@@ -486,13 +511,16 @@ public final class ModItems {
 		OreDictionary.registerOre("cropSpiceleaf", new ItemStack(ModItems.mint));
 		OreDictionary.registerOre("listAllgreenveggie", new ItemStack(ModItems.mint));
 		OreDictionary.registerOre("cropThistle", new ItemStack(ModItems.thistle));
+		OreDictionary.registerOre("listAllherb", new ItemStack(ModItems.thistle));
 		OreDictionary.registerOre("cropGarlic", new ItemStack(ModItems.garlic));
 		OreDictionary.registerOre("listAllherb", new ItemStack(ModItems.garlic));
 		OreDictionary.registerOre("cropAconitum", new ItemStack(ModItems.aconitum));
 		OreDictionary.registerOre("cropWhiteSage", new ItemStack(ModItems.white_sage));
+		OreDictionary.registerOre("listAllherb", new ItemStack(ModItems.white_sage));
 		OreDictionary.registerOre("cropTulsi", new ItemStack(ModItems.tulsi));
 		OreDictionary.registerOre("listAllherb", new ItemStack(ModItems.tulsi));
 		OreDictionary.registerOre("cropKenaf", new ItemStack(ModItems.kenaf));
+		OreDictionary.registerOre("listAllfiber", new ItemStack(ModItems.kenaf));
 		OreDictionary.registerOre("cropSilphium", new ItemStack(ModItems.silphium));
 		OreDictionary.registerOre("listAllgreenveggie", new ItemStack(ModItems.silphium));
 		OreDictionary.registerOre("listAllherb", new ItemStack(ModItems.silphium));
@@ -506,5 +534,11 @@ public final class ModItems {
 		OreDictionary.registerOre("dye", new ItemStack(ModItems.catechu));
 		OreDictionary.registerOre("ingotColdIron", new ItemStack(ModItems.cold_iron_ingot));
 		OreDictionary.registerOre("nuggetColdIron", new ItemStack(ModItems.cold_iron_nugget));
+		OreDictionary.registerOre("toolMortarandpestle", new ItemStack(ModItems.mortar_and_pestle));
+		OreDictionary.registerOre("mortar_and_pestle", new ItemStack(ModItems.mortar_and_pestle));
+		OreDictionary.registerOre("pestleAndMortar", new ItemStack(ModItems.mortar_and_pestle));
+		OreDictionary.registerOre("materialWaxcomb", new ItemStack(ModItems.empty_honeycomb));
+		OreDictionary.registerOre("materialHoneycomb", new ItemStack(ModItems.honeycomb));
+		OreDictionary.registerOre("itemHoney", new ItemStack(ModItems.honey));
 	}
 }

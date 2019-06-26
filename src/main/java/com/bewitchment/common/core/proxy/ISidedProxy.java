@@ -4,6 +4,7 @@ import com.bewitchment.api.hotbar.IHotbarAction;
 import com.bewitchment.client.fx.ParticleF;
 import com.bewitchment.common.content.tarot.TarotHandler.TarotInfo;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -31,4 +32,6 @@ public interface ISidedProxy {
 	boolean isPlayerInEndFire();
 
 	void stopMimicking(EntityPlayer p);
+
+	public void registerTexture(Fluid fluid);
 }

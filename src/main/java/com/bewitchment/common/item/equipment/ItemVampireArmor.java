@@ -4,6 +4,7 @@ import com.bewitchment.client.core.IModelRegister;
 import com.bewitchment.client.handler.ModelHandler;
 import com.bewitchment.client.render.entity.model.ModelVampireArmor;
 import com.bewitchment.common.core.statics.ModCreativeTabs;
+import com.bewitchment.common.lib.LibMod;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -16,9 +17,8 @@ public class ItemVampireArmor extends ItemArmor implements IModelRegister {
 
 	public ItemVampireArmor(String id, ArmorMaterial materialIn, int renderIndex, EntityEquipmentSlot equipmentSlotIn) {
 		super(materialIn, renderIndex, equipmentSlotIn);
-		this.setMaxStackSize(1);
 		setRegistryName(id);
-		setTranslationKey(id);
+		setTranslationKey(LibMod.MOD_ID + "." + id);
 		setCreativeTab(ModCreativeTabs.ITEMS_CREATIVE_TAB);
 	}
 

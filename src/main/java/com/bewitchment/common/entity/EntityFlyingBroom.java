@@ -4,6 +4,7 @@ import com.bewitchment.api.mp.IMagicPowerContainer;
 import com.bewitchment.common.Bewitchment;
 import com.bewitchment.common.core.util.DimensionalPosition;
 import com.bewitchment.common.item.ModItems;
+import com.bewitchment.common.lib.LibReflection;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -27,7 +28,6 @@ import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
@@ -39,12 +39,12 @@ public class EntityFlyingBroom extends Entity {
 	private static final DataParameter<Integer> TYPE = EntityDataManager.<Integer>createKey(EntityFlyingBroom.class, DataSerializers.VARINT);
 	private static final DataParameter<Integer> FUEL = EntityDataManager.<Integer>createKey(EntityFlyingBroom.class, DataSerializers.VARINT); //ONLY SYNCHRONIZED WHEN EMPTY OR FULL
 	private static final int MAX_FUEL = 100;
-	Field isJumping = ReflectionHelper.findField(EntityLivingBase.class, "field_70703_bu", "isJumping");
+	Field isJumping = LibReflection.jumpField("field_70703_bu", "isJumping", EntityLivingBase.class);
 	private DimensionalPosition orig_position;
 
 	public EntityFlyingBroom(World world) {
 		super(world);
-		this.setSize(1f, 1);
+		this.setSize(0.7f, 0.7f);
 	}
 
 	public EntityFlyingBroom(World world, double x, double y, double z, int type) {
@@ -174,11 +174,11 @@ public class EntityFlyingBroom extends Entity {
 			if (this.prevPosY == this.posY) motionY = 0;
 		}
 		if (this.isBeingRidden()) {
-			this.setSize(1f, 2f);// If a player is riding, account for the height of the player
+			this.setSize(0.7f, rider.height);// If a player is riding, account for the height of the player
 		}
 		this.move(MoverType.SELF, motionX, motionY, motionZ);
 		if (this.isBeingRidden()) {
-			this.setSize(1f, 1f);
+			this.setSize(0.7f, 0.7f);
 		}
 	}
 

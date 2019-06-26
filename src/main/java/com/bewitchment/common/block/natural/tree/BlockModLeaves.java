@@ -39,7 +39,7 @@ import java.util.Random;
 public class BlockModLeaves extends BlockLeaves implements IModelRegister {
 
 	public BlockModLeaves(String id) {
-		setTranslationKey(id);
+		setTranslationKey(LibMod.MOD_ID + "." + id);
 		setRegistryName(LibMod.MOD_ID, id);
 		setCreativeTab(ModCreativeTabs.PLANTS_CREATIVE_TAB);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(CHECK_DECAY, Boolean.valueOf(true)).withProperty(DECAYABLE, Boolean.valueOf(true)));
@@ -114,10 +114,14 @@ public class BlockModLeaves extends BlockLeaves implements IModelRegister {
 
 	@Override
 	protected int getSaplingDropChance(IBlockState state) {
-		if (state.getBlock() == ModBlocks.leaves_juniper) return super.getSaplingDropChance(state) * 3;
+		if (state.getBlock() == ModBlocks.leaves_elder) return 15;
+		if (state.getBlock() == ModBlocks.leaves_juniper) return 10;
+		if (state.getBlock() == ModBlocks.leaves_yew) return 20;
+		if (state.getBlock() == ModBlocks.leaves_cypress) return 13;
 		return super.getSaplingDropChance(state);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		this.leavesFancy = Bewitchment.proxy.isFancyGraphicsEnabled();

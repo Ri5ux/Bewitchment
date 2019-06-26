@@ -3,6 +3,7 @@ package com.bewitchment.common.block.tiles;
 import com.bewitchment.common.block.BlockModTileEntity;
 import com.bewitchment.common.tile.tiles.TileEntityDistillery;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -30,6 +31,9 @@ public class BlockDistillery extends BlockModTileEntity {
 	public BlockDistillery(String id) {
 		super(id, Material.IRON);
 		this.setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.SOUTH));
+		setResistance(5F);
+		setHardness(5F);
+		setHarvestLevel("pickaxe", 0);
 	}
 
 	@Override
@@ -52,6 +56,12 @@ public class BlockDistillery extends BlockModTileEntity {
 	@Override
 	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
 		return blockState.getValue(FACING).getAxis() == Axis.Z ? BBOX_X : BBOX_Z;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+		return BlockFaceShape.UNDEFINED;
 	}
 
 	@SuppressWarnings("deprecation")

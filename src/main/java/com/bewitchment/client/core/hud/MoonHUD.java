@@ -14,7 +14,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Config.Type;
 import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class MoonHUD extends HudComponent {
 
 	private static final float minWarn = 12000;
@@ -44,7 +47,7 @@ public class MoonHUD extends HudComponent {
 			} else {
 				warn = 1;
 			}
-			return I18n.format("moon.tooltip." + warn);
+			return I18n.format("moon.bewitchment.tooltip." + warn);
 		}
 		return null;
 	}

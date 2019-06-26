@@ -2,6 +2,7 @@ package com.bewitchment.common;
 
 import com.bewitchment.common.api.ApiInstance;
 import com.bewitchment.common.block.ModBlocks;
+import com.bewitchment.common.block.natural.fluid.Fluids;
 import com.bewitchment.common.block.natural.plants.BlockMoonbell;
 import com.bewitchment.common.content.actionbar.ModAbilities;
 import com.bewitchment.common.content.cauldron.CauldronRegistry;
@@ -31,26 +32,29 @@ import com.bewitchment.common.core.command.*;
 import com.bewitchment.common.core.event.LootTableEventHandler;
 import com.bewitchment.common.core.gen.ModGen;
 import com.bewitchment.common.core.helper.CropHelper;
+import com.bewitchment.common.core.helper.Log;
 import com.bewitchment.common.core.helper.MobHelper;
+import com.bewitchment.common.core.net.GuiHandler;
 import com.bewitchment.common.core.net.NetworkHandler;
 import com.bewitchment.common.core.proxy.ISidedProxy;
+import com.bewitchment.common.core.statics.EntityConfiguration;
 import com.bewitchment.common.core.statics.ModLootTables;
 import com.bewitchment.common.crafting.FrostFireRecipe;
 import com.bewitchment.common.crafting.ModDistilleryRecipes;
 import com.bewitchment.common.crafting.ModOvenSmeltingRecipes;
 import com.bewitchment.common.crafting.ModSpinningThreadRecipes;
-import com.bewitchment.common.entity.ModEntities;
+import com.bewitchment.common.integration.optifine.Optifine;
 import com.bewitchment.common.integration.patchouli.Patchouli;
 import com.bewitchment.common.integration.thaumcraft.ThaumcraftCompatBridge;
 import com.bewitchment.common.item.ModItems;
 import com.bewitchment.common.lib.LibMod;
 import com.bewitchment.common.potion.ModPotions;
-import com.bewitchment.common.world.EntityPlacementHelper;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -58,8 +62,11 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 
 import static com.bewitchment.common.lib.LibMod.MOD_NAME;
 
@@ -68,8 +75,32 @@ import static com.bewitchment.common.lib.LibMod.MOD_NAME;
  * It's distributed as part of Bewitchment under
  * the MIT license.
  */
+
+//R DZH SVIV
+//HFMXLMFIV11
+//HKRMLHZFIFH111
+//MLGOVTZOGVMWVI
+//OVHLERPP
+//WZGFIZ
+//GSILFTS GSVHV ORMVH R WL WVXIVV
+//GSZG YB NVIVOB KFGGRMT NB MZNV RM
+//NB RMUOFVMXV TILDH, ZMW GSFH, R YVXLNV RNNLIGZO
+//XBYVIMVGRX DVY
+
+
+//GL HLNV, R ZN YFG Z HSZWV
+//YFG SVIV, R VCVIG KLDVI LEVI GSVN
+//R NZWV Z XZHGOV SVIV LM GSRH SROO
+//ZMW SZEV KFG NB UOZT RM GSV TILFMW
+//GSRH RH NB MVD DLIOW
+
+
+//HSLFOW GSV GIVHKZHHVIH LU GSV LOW DLIOW
+//ZIIREV SVIV, YVZIRMT SLHGRORGRVH
+//GSVB DROO YV NVG DRGS DIZGS
+
 @SuppressWarnings("WeakerAccess")
-@Mod(modid = LibMod.MOD_ID, name = MOD_NAME, version = LibMod.MOD_VER, dependencies = LibMod.DEPENDENCIES, acceptedMinecraftVersions = "[1.12,1.13]", certificateFingerprint = "@FINGERPRINT@")
+@Mod(modid = LibMod.MOD_ID, name = MOD_NAME, version = LibMod.MOD_VER, dependencies = LibMod.DEPENDENCIES, acceptedMinecraftVersions = "[1.12,1.13]", certificateFingerprint = LibMod.FINGERPRINT)
 public class Bewitchment {
 
 	public static final Logger logger = LogManager.getLogger(MOD_NAME);
@@ -83,13 +114,27 @@ public class Bewitchment {
 	public static ISidedProxy proxy;
 	@Instance(LibMod.MOD_ID)
 	public static Bewitchment instance;
+	public static Configuration entityConfig;
 
 	static {
 		FluidRegistry.enableUniversalBucket();
 	}
 
 	@EventHandler
+	public static void serverStart(FMLServerStartingEvent e) {
+		EntityConfiguration.readConfig();
+	}
+
+	@EventHandler
+	public void fingerprintViolation(FMLFingerprintViolationEvent evt) {
+		if (!"true".equals(System.getProperty("ignoreBewitchmentFingerprint"))) {
+			Log.w("!! WARNING: The mod " + LibMod.MOD_NAME + " has an invalid signature, this is likely due to someone messing with the jar without permission!");
+		}
+	}
+
+	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new Fluids.Handler());
 		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(new LootTableEventHandler());
 		ApiInstance.initAPI();
@@ -112,14 +157,12 @@ public class Bewitchment {
 		NetworkHandler.init();
 		ModInfusions.init();
 		ModTransformations.init();
-		ModEntities.init();
+		entityConfig = new Configuration(new File(event.getModConfigurationDirectory().getPath(), "bewitchment_entities.cfg"));
 		ModSpells.init();
 		ModFortunes.init();
 		ModLootTables.registerLootTables();
-		FrostFireRecipe.init();
 		proxy.preInit(event);
 		ThaumcraftCompatBridge.loadThaumcraftCompat();
-		EntityPlacementHelper.init();
 
 		logger.info("Remember when I told you how my");
 		logger.info("Kin is different in some ways?");
@@ -135,6 +178,7 @@ public class Bewitchment {
 		SimpleCapability.init(CapabilityVampire.class, LibMod.MOD_ID, CapabilityVampire.CAPABILITY, CapabilityVampire.DEFAULT_INSTANCE);
 		ModItems.init();
 		ModBlocks.init();
+		Fluids.init();
 		ModTarots.init();
 		CauldronRegistry.init();
 		ModDistilleryRecipes.init();
@@ -142,9 +186,12 @@ public class Bewitchment {
 		ModGen.init();
 		ModSpinningThreadRecipes.init();
 		ModOvenSmeltingRecipes.init();
+		NetworkRegistry.INSTANCE.registerGuiHandler(Bewitchment.instance, new GuiHandler());
 		ModRituals.init();
 		ModBrewModifiers.init();
 		Patchouli.init();
+		Optifine.init();
+		FrostFireRecipe.init();
 		logger.info("It's a fact, she is exactly that!");
 		logger.info("A harbinger of death from the world of witchcraft,");
 		logger.info("And she's feeding them cakes and her ale to this innocent boy,");
@@ -157,10 +204,12 @@ public class Bewitchment {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent evt) {
-		BiomeDictionary.getBiomes(BiomeDictionary.Type.FOREST).parallelStream().filter(b -> BiomeDictionary.hasType(b, BiomeDictionary.Type.DENSE)).forEach(b -> {
+		BiomeDictionary.getBiomes(BiomeDictionary.Type.FOREST).stream().filter(b -> BiomeDictionary.hasType(b, BiomeDictionary.Type.DENSE)).forEach(b -> {
 			BlockMoonbell.addValidMoonbellBiome(b);
 		});
-
+		if (entityConfig.hasChanged()) {
+			entityConfig.save();
+		}
 		CauldronRegistry.postInit();
 	}
 

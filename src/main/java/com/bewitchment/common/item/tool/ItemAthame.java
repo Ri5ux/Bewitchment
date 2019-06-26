@@ -3,9 +3,16 @@ package com.bewitchment.common.item.tool;
 import com.bewitchment.client.core.IModelRegister;
 import com.bewitchment.client.handler.ModelHandler;
 import com.bewitchment.common.core.statics.ModCreativeTabs;
+import com.bewitchment.common.entity.living.animals.*;
+import com.bewitchment.common.entity.spirits.demons.EntityDemon;
+import com.bewitchment.common.entity.spirits.demons.EntityDemoness;
+import com.bewitchment.common.entity.spirits.demons.EntityHellhound;
+import com.bewitchment.common.entity.spirits.demons.EntityHellhoundAlpha;
+import com.bewitchment.common.entity.spirits.ghosts.EntityBlackDog;
 import com.bewitchment.common.item.ModItems;
 import com.bewitchment.common.item.ModMaterials;
 import com.bewitchment.common.lib.LibItemName;
+import com.bewitchment.common.lib.LibMod;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -45,9 +52,8 @@ public class ItemAthame extends ItemSword implements IModelRegister {
 	public ItemAthame() {
 		super(ModMaterials.TOOL_RITUAL);
 		setMaxDamage(600);
-		this.setMaxStackSize(1);
 		setRegistryName(LibItemName.ATHAME);
-		setTranslationKey(LibItemName.ATHAME);
+		setTranslationKey(LibMod.MOD_ID + "." + LibItemName.ATHAME);
 		setCreativeTab(ModCreativeTabs.ITEMS_CREATIVE_TAB);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -65,14 +71,10 @@ public class ItemAthame extends ItemSword implements IModelRegister {
 		return true;
 	}
 
-	public String getNameInefficiently(ItemStack stack) {
-		return getTranslationKey().substring(5);
-	}
-
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, @Nullable World player, List<String> tooltip, ITooltipFlag advanced) {
-		tooltip.add(TextFormatting.YELLOW + I18n.format("witch.tooltip." + getNameInefficiently(stack) + "_description.name"));
+		tooltip.add(TextFormatting.YELLOW + I18n.format("tooltip." + getTranslationKey().substring(5) + "_description.name"));
 	}
 
 	//Todo: Rewrite in it's entirety. Use loot tables.
@@ -210,6 +212,63 @@ public class ItemAthame extends ItemSword implements IModelRegister {
 
 				else if (event.getEntityLiving() instanceof EntityDonkey && rand.nextInt(4) <= 2 + 2 * looting)
 					addDrop(event, new ItemStack(ModItems.equine_tail, 1));
+
+				else if (event.getEntityLiving() instanceof EntitySnake && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.filet_of_fenny_snake, 3));
+
+				else if (event.getEntityLiving() instanceof EntitySnake && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.adders_fork, 3));
+
+				else if (event.getEntityLiving() instanceof EntityHellhound && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.tongue_of_dog, 1));
+
+				else if (event.getEntityLiving() instanceof EntityHellhound && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(Items.BLAZE_POWDER, 4, 0));
+
+				else if (event.getEntityLiving() instanceof EntityHellhound && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.hellhound_horn, 2, 0));
+
+				else if (event.getEntityLiving() instanceof EntityBlindworm && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.blindworms_sting, 2));
+
+				else if (event.getEntityLiving() instanceof EntityLizard && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.lizard_leg, 4));
+
+				else if (event.getEntityLiving() instanceof EntityNewt && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.eye_of_newt, 2));
+
+				else if (event.getEntityLiving() instanceof EntityRaven && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.ravens_feather, 4));
+
+				else if (event.getEntityLiving() instanceof EntityToad && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.toe_of_frog, 4));
+
+				else if (event.getEntityLiving() instanceof EntityOwl && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.owlets_wing, 2));
+
+				else if (event.getEntityLiving() instanceof EntityBlackDog && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.ectoplasm, 4));
+
+				else if (event.getEntityLiving() instanceof EntityBlackDog && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.spectral_dust, 1));
+
+				else if (event.getEntityLiving() instanceof EntityBlackDog && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.tongue_of_dog, 1));
+
+				else if (event.getEntityLiving() instanceof EntityHellhoundAlpha && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.tongue_of_dog, 1));
+
+				else if (event.getEntityLiving() instanceof EntityHellhoundAlpha && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(Items.BLAZE_POWDER, 8, 0));
+
+				else if (event.getEntityLiving() instanceof EntityHellhoundAlpha && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.hellhound_horn, 4, 0));
+
+				else if (event.getEntityLiving() instanceof EntityDemon && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.demon_heart, 1, 0));
+
+				else if (event.getEntityLiving() instanceof EntityDemoness && rand.nextInt(4) <= 2 + 2 * looting)
+					addDrop(event, new ItemStack(ModItems.demon_heart, 1, 0));
 
 				else if (event.getEntityLiving() instanceof EntityPlayer && rand.nextInt(11) <= 1 + looting) {
 					ItemStack stack = new ItemStack(Items.SKULL, 1, 3);

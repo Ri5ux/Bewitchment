@@ -36,7 +36,7 @@ public class BlockMoss extends BlockVine implements IModelRegister {
 	public BlockMoss(boolean terminal) {
 		String name = LibBlockName.SPANISH_MOSS + (terminal ? "_end" : "");
 		this.setRegistryName(LibMod.MOD_ID, name);
-		this.setTranslationKey(LibBlockName.SPANISH_MOSS);
+		setTranslationKey(LibMod.MOD_ID + "." + LibBlockName.SPANISH_MOSS);
 		this.setSoundType(SoundType.PLANT);
 		this.setTickRandomly(!terminalPiece);
 		if (terminal) {
@@ -51,6 +51,12 @@ public class BlockMoss extends BlockVine implements IModelRegister {
 	@Override
 	public void registerModel() {
 		ModelHandler.registerModel(this, 0);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+		return BlockFaceShape.UNDEFINED;
 	}
 
 	@Override

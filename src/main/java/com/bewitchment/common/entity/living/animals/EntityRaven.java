@@ -5,16 +5,20 @@ import com.bewitchment.common.entity.living.EntityMultiSkin;
 import com.bewitchment.common.item.ModItems;
 import com.bewitchment.common.lib.LibMod;
 import com.google.common.collect.Sets;
+import net.ilexiconn.llibrary.server.animation.Animation;
+import net.ilexiconn.llibrary.server.animation.IAnimatedEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockLog;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
@@ -35,13 +39,17 @@ import net.minecraft.world.World;
 
 import java.util.Set;
 
-public class EntityRaven extends EntityMultiSkin {
+//ENTITYFAMILIAR
+public class EntityRaven extends EntityMultiSkin implements IAnimatedEntity {
 
 	private static final ResourceLocation loot = new ResourceLocation(LibMod.MOD_ID, "entities/raven");
 	private static final Set<Item> TAME_ITEMS = Sets.newHashSet(Items.GOLD_NUGGET, ModItems.silver_nugget);
 	private static final Set<Item> FODDER_ITEMS = Sets.newHashSet(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS, Items.NETHER_WART, ModItems.seed_aconitum, ModItems.seed_asphodel, ModItems.seed_belladonna, ModItems.seed_chrysanthemum, ModItems.seed_garlic, ModItems.seed_ginger, ModItems.seed_hellebore, ModItems.seed_kelp, ModItems.seed_kenaf, ModItems.seed_lavender, ModItems.seed_mandrake, ModItems.seed_mint, ModItems.seed_sagebrush, ModItems.seed_silphium, ModItems.seed_thistle, ModItems.seed_tulsi, ModItems.seed_white_sage, ModItems.seed_wormwood);
-	//	private static final String[] names = {"Huginn", "Muninn", "Morrigan", "Bhusunda", "Pallas", "Qrow", "Nevermore", "Corvus", "Apollo", "Odin", "Badhbh", "Bran", "Crowe", "Scarecrow", "Santa Caws", "Valravn", "Cain", "Mabel", "Grip", "Harbinger", "Shani", "Diablo", "Raven", "Charlie", "Unidan", "Yatagarasu", "Samjokgo", "Ischys"}; //I'm trash lmao
+	private static final String[] names = {"Huginn", "Muninn", "Morrigan", "Bhusunda", "Pallas", "Qrow", "Nevermore", "Corvus", "Apollo", "Odin", "Badhbh", "Bran", "Crowe", "Scarecrow", "Santa Caws", "Valravn", "Cain", "Mabel", "Grip", "Harbinger", "Shani", "Diablo", "Raven", "Charlie", "Unidan", "Yatagarasu", "Samjokgo", "Ischys"}; //I'm trash lmao
 	private static final DataParameter<Integer> TINT = EntityDataManager.createKey(EntityRaven.class, DataSerializers.VARINT);
+	private static final double maxHPWild = 8;
+	private int animationTick;
+	private Animation currentAnimation;
 
 	public EntityRaven(World worldIn) {
 		super(worldIn);
@@ -58,6 +66,7 @@ public class EntityRaven extends EntityMultiSkin {
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
 		this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
+		this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 		this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(1);
 		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.5D);
 		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(8.0D);
@@ -79,12 +88,18 @@ public class EntityRaven extends EntityMultiSkin {
 
 	@Override
 	protected void initEntityAI() {
+		this.aiSit = new EntityAISit(this);
 		this.tasks.addTask(0, new EntityAIPanic(this, 0.7D));
 		this.tasks.addTask(1, new EntityAISwimming(this));
 		this.tasks.addTask(2, this.aiSit);
 		this.tasks.addTask(3, new EntityAIMate(this, 0.8d));
 		this.tasks.addTask(4, new EntityAIWatchClosest2(this, EntityPlayer.class, 5f, 1f));
+		this.tasks.addTask(5, new EntityAIWander(this, 0.5D));
 		this.tasks.addTask(5, new EntityAILookIdle(this));
+		this.tasks.addTask(4, new EntityAIFollowParent(this, 0.5D));
+		this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
+		this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
+		this.tasks.addTask(2, new EntityAIFollowOwnerFlying(this, 1.0D, 5.0F, 1.0F));
 	}
 
 	@Override
@@ -120,8 +135,15 @@ public class EntityRaven extends EntityMultiSkin {
 			}
 			return true;
 		}
-		return true;
+		if (this.isOwner(player) && !this.world.isRemote && !this.isBreedingItem(itemstack)) {
+			this.aiSit.setSitting(!this.isSitting());
+			this.isJumping = false;
+			this.navigator.clearPath();
+			this.setAttackTarget((EntityLivingBase) null);
+		}
+		return super.processInteract(player, hand);
 	}
+
 
 	@Override
 	public EntityAgeable createChild(EntityAgeable ageable) {
@@ -194,15 +216,22 @@ public class EntityRaven extends EntityMultiSkin {
 		}
 	}
 
-	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount) {
 		if (this.isEntityInvulnerable(source)) {
 			return false;
+		} else {
+			Entity entity = source.getTrueSource();
+
+			if (this.aiSit != null) {
+				this.setSitting(false);
+			}
+
+			if (entity != null && !(entity instanceof EntityPlayer) && !(entity instanceof EntityArrow)) {
+				amount = (amount + 1.0F) / 2.0F;
+			}
+
+			return super.attackEntityFrom(source, amount);
 		}
-		if (this.aiSit != null) {
-			this.aiSit.setSitting(false);
-		}
-		return super.attackEntityFrom(source, amount);
 	}
 
 	@Override
@@ -210,4 +239,28 @@ public class EntityRaven extends EntityMultiSkin {
 		return 1;
 	}
 
+	@Override
+	public int getAnimationTick() {
+		return 0;
+	}
+
+	@Override
+	public void setAnimationTick(int tick) {
+
+	}
+
+	@Override
+	public Animation getAnimation() {
+		return null;
+	}
+
+	@Override
+	public void setAnimation(Animation animation) {
+
+	}
+
+	@Override
+	public Animation[] getAnimations() {
+		return new Animation[0];
+	}
 }

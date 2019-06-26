@@ -1,9 +1,12 @@
 package com.bewitchment.common.entity.living.animals;
 
 import com.bewitchment.common.entity.living.EntityMultiSkin;
+import com.bewitchment.common.entity.spirits.demons.EntityUran;
 import com.bewitchment.common.item.ModItems;
 import com.bewitchment.common.lib.LibMod;
 import com.google.common.collect.Sets;
+import net.ilexiconn.llibrary.server.animation.Animation;
+import net.ilexiconn.llibrary.server.animation.IAnimatedEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockGrass;
 import net.minecraft.entity.Entity;
@@ -11,10 +14,12 @@ import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
+import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
@@ -38,13 +43,17 @@ import java.util.Set;
  * Created by Joseph on 10/2/2018.
  */
 
-public class EntitySnake extends EntityMultiSkin {
+//ENTITYFAMILIAR
+public class EntitySnake extends EntityMultiSkin implements IAnimatedEntity {
 
 	private static final ResourceLocation loot = new ResourceLocation(LibMod.MOD_ID, "entities/snake");
-	//	private static final String[] names = {"David Hisslehoff", "Strangles", "Julius Squeezer", "William Snakespeare", "Medusa", "Sir Hiss", "Nagini", "Naga", "Slithers", "Rumplesnakeskin", "Monty the Python", "Shesha", "Nagaraja", "Stheno", "Euryale", "Vasuki", "Bakunawa", "Kaliya", "Karkotaka", "Manasa", "Mucalinda", "Padmavati", "Paravataksha", "Takshaka", "Ulupi", "Yulong", "Sir Booplesnoot", "Cobra", "Angus Snake", "Anguis", "Python", "Fafnir", "Echidna", "Anaconda", "Madame White Snake", "Meretseger", "Kaa", "Snape", "Solid Snake", "Apophis", "Ouroboros"};
+	private static final String[] names = {"David Hisslehoff", "Strangles", "Julius Squeezer", "William Snakespeare", "Medusa", "Sir Hiss", "Nagini", "Naga", "Slithers", "Rumplesnakeskin", "Monty the Python", "Shesha", "Nagaraja", "Stheno", "Euryale", "Vasuki", "Bakunawa", "Kaliya", "Karkotaka", "Manasa", "Mucalinda", "Padmavati", "Paravataksha", "Takshaka", "Ulupi", "Yulong", "Sir Booplesnoot", "Cobra", "Angus Snake", "Anguis", "Python", "Fafnir", "Echidna", "Anaconda", "Madame White Snake", "Meretseger", "Kaa", "Snape", "Solid Snake", "Apophis", "Ouroboros"};
 	private static final Set<Item> TAME_ITEMS = Sets.newHashSet(Items.RABBIT, Items.CHICKEN);
 	private static final DataParameter<Integer> TINT = EntityDataManager.createKey(EntitySnake.class, DataSerializers.VARINT);
 	private static final int TIME_BETWEEN_MILK = 3600;
+	private static final double maxHPWild = 8;
+	private int animationTick;
+	private Animation currentAnimation;
 
 	private int timerRef = 0;
 	private int milkCooldown = 0;
@@ -52,6 +61,7 @@ public class EntitySnake extends EntityMultiSkin {
 	public EntitySnake(World worldIn) {
 		super(worldIn);
 		setSize(1F, .3F);
+		this.moveHelper = new EntityMoveHelper(this);
 	}
 
 	@Override
@@ -62,14 +72,26 @@ public class EntitySnake extends EntityMultiSkin {
 	}
 
 	@Override
+	public int getSkinTypes() {
+		return 6;
+	}
+
 	public boolean attackEntityFrom(DamageSource source, float amount) {
 		if (this.isEntityInvulnerable(source)) {
 			return false;
+		} else {
+			Entity entity = source.getTrueSource();
+
+			if (this.aiSit != null) {
+				this.setSitting(false);
+			}
+
+			if (entity != null && !(entity instanceof EntityPlayer) && !(entity instanceof EntityArrow)) {
+				amount = (amount + 1.0F) / 2.0F;
+			}
+
+			return super.attackEntityFrom(source, amount);
 		}
-		if (this.aiSit != null) {
-			this.aiSit.setSitting(false);
-		}
-		return super.attackEntityFrom(source, amount);
 	}
 
 	@Override
@@ -82,8 +104,25 @@ public class EntitySnake extends EntityMultiSkin {
 		return block instanceof BlockGrass && this.world.getLight(blockpos) > 8 && super.getCanSpawnHere();
 	}
 
+	public void onStruckByLightning(EntityLightningBolt lightningBolt) {
+		if (!this.world.isRemote && !this.isDead) {
+			EntityUran entityuran = new EntityUran(this.world);
+			entityuran.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
+			entityuran.setNoAI(this.isAIDisabled());
+
+			if (this.hasCustomName()) {
+				entityuran.setCustomNameTag(this.getCustomNameTag());
+				entityuran.setAlwaysRenderNameTag(this.getAlwaysRenderNameTag());
+			}
+
+			this.world.spawnEntity(entityuran);
+			this.setDead();
+		}
+	}
+
 	@Override
 	protected void initEntityAI() {
+		this.aiSit = new EntityAISit(this);
 		this.tasks.addTask(1, new EntityAISwimming(this));
 		this.tasks.addTask(3, new EntityAIAttackMelee(this, 0.3D, false));
 		this.tasks.addTask(5, new EntityAILookIdle(this));
@@ -93,7 +132,12 @@ public class EntitySnake extends EntityMultiSkin {
 		this.targetTasks.addTask(3, new EntityAITargetNonTamed<>(this, EntityPlayer.class, true, p -> p.getDistanceSq(this) < 1));
 		this.targetTasks.addTask(4, new EntityAITargetNonTamed<EntityLivingBase>(this, EntityLivingBase.class, false, e -> e instanceof EntityRabbit || e instanceof EntityChicken || e instanceof EntityBlindworm || e instanceof EntityLizard || e.getClass().getName().equals("seraphaestus.historicizedmedicine.Mob.Rat.EntityRat")));
 		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
-		this.tasks.addTask(3, new EntityAIAttackMelee(this, 1.0D, false));
+		this.tasks.addTask(3, new EntityAIAttackMelee(this, 0.5D, false));
+		this.tasks.addTask(4, new EntityAIFollowParent(this, 0.5D));
+		this.tasks.addTask(5, new EntityAIWander(this, 0.5D));
+		this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
+		this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
+		tasks.addTask(4, new EntityAIFollowOwner(this, getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue(), 2, 5));
 	}
 
 	@Override
@@ -122,6 +166,15 @@ public class EntitySnake extends EntityMultiSkin {
 	@Override
 	public int getMaxSpawnedInChunk() {
 		return 2;
+	}
+
+	public boolean isPotionApplicable(PotionEffect potioneffectIn) {
+		if (potioneffectIn.getPotion() == MobEffects.POISON) {
+			net.minecraftforge.event.entity.living.PotionEvent.PotionApplicableEvent event = new net.minecraftforge.event.entity.living.PotionEvent.PotionApplicableEvent(this, potioneffectIn);
+			net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
+			return event.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW;
+		}
+		return super.isPotionApplicable(potioneffectIn);
 	}
 
 	@Override
@@ -159,11 +212,14 @@ public class EntitySnake extends EntityMultiSkin {
 	}
 
 	@Override
+	public boolean canBePushed() {
+		return true;
+	}
+
+	@Override
 	public boolean processInteract(EntityPlayer player, EnumHand hand) {
 		//DEV ONLY CODE -- REMOVE BEFORE COMPILATION
 		//TODO
-		this.setTamedBy(player);
-		this.setSitting(!player.isSneaking());
 		//---- ^^^^ ----
 		if (this.getAttackTarget() == null || this.getAttackTarget().isDead || this.getRevengeTarget() == null || this.getRevengeTarget().isDead) {
 			ItemStack itemstack = player.getHeldItem(hand);
@@ -207,8 +263,15 @@ public class EntitySnake extends EntityMultiSkin {
 				}
 				return true;
 			}
+			if (this.isOwner(player) && !this.world.isRemote && !this.isBreedingItem(itemstack)) {
+				this.aiSit.setSitting(!this.isSitting());
+				this.isJumping = false;
+				this.navigator.clearPath();
+				this.setAttackTarget((EntityLivingBase) null);
+			}
+			return super.processInteract(player, hand);
 		}
-		return false;
+		return super.processInteract(player, hand);
 	}
 
 	@Override
@@ -254,7 +317,27 @@ public class EntitySnake extends EntityMultiSkin {
 	}
 
 	@Override
-	public int getSkinTypes() {
-		return 6;
+	public int getAnimationTick() {
+		return 0;
+	}
+
+	@Override
+	public void setAnimationTick(int tick) {
+
+	}
+
+	@Override
+	public Animation getAnimation() {
+		return null;
+	}
+
+	@Override
+	public void setAnimation(Animation animation) {
+
+	}
+
+	@Override
+	public Animation[] getAnimations() {
+		return new Animation[0];
 	}
 }

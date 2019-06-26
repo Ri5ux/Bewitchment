@@ -29,6 +29,8 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -183,6 +185,8 @@ public class TileEntityGlyph extends ModTileEntity implements ITickable {
 					stopRitual(player);
 				}
 			}
+		} else if (world.isRemote && hasRunningRitual()) {
+			spawnParticles();
 		}
 	}
 
@@ -199,16 +203,21 @@ public class TileEntityGlyph extends ModTileEntity implements ITickable {
 		}
 
 		List<EntityItem> itemsOnGround = getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(getPos()).grow(3, 0, 3));
+		List<Entity> entitiesOnGround = getWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(getPos()).grow(3, 0, 3));
 		List<BlockPos> placedOnGround = BlockStreamHelper.ofPos(getPos().add(3, 0, 3), getPos().add(-3, 0, -3))
 				.filter(t -> (world.getTileEntity(t) instanceof TileEntityPlacedItem))
 				.collect(Collectors.toList());
 		ArrayList<ItemStack> recipe = new ArrayList<>();
-		itemsOnGround.stream().map(i -> i.getItem()).forEach(is -> recipe.add(is));
+		itemsOnGround.stream().map(i -> i.getItem().copy()).forEach(is -> {
+			while (!is.isEmpty()) {
+				recipe.add(is.splitStack(1));
+			}
+		});
 		placedOnGround.stream().map(t -> (TileEntityPlacedItem) world.getTileEntity(t))
 				.forEach(te -> recipe.add(te.getItem()));
 
 		for (AdapterIRitual rit : AdapterIRitual.REGISTRY) { // Check every ritual
-			if (rit.isValidInput(recipe, hasCircles(rit))) { // Check if circles and items match
+			if (rit.getSacrifices().isEmpty() ? rit.isValidInput(recipe, hasCircles(rit)) : rit.isValidInput(recipe, entitiesOnGround, hasCircles(rit))) { // Check if circles and items match
 				if (rit.isValid(player, world, pos, recipe, effPos, 1)) { // Checks of extra conditions are met
 
 					if (altarTracker.drainAltarFirst(player, pos, world.provider.getDimension(), (int) (rit.getRequiredStartingPower() * powerDrainMult))) { // Check if there is enough starting power (and uses it in case there is)
@@ -229,6 +238,13 @@ public class TileEntityGlyph extends ModTileEntity implements ITickable {
 							itemsUsed.appendTag(item);
 							NetworkHandler.HANDLER.sendToDimension(new SmokeSpawn(bp.getX() + 0.5d, bp.getY() + 0.1, bp.getZ() + 0.5d), world.provider.getDimension());
 						});
+						for (Entity e : entitiesOnGround) {
+							if (rit.getSacrifices().contains(e.getClass())) {
+								e.attackEntityFrom(DamageSource.MAGIC, Integer.MAX_VALUE);
+								NetworkHandler.HANDLER.sendToDimension(new SmokeSpawn(e.posX + 0.5d, e.posY + 0.1, e.posZ + 0.5d), world.provider.getDimension());
+								break;
+							}
+						}
 						ritualData.setTag("itemsUsed", itemsUsed);
 
 						// Sets the ritual up
@@ -446,11 +462,33 @@ public class TileEntityGlyph extends ModTileEntity implements ITickable {
 	@Override
 	protected void writeModSyncDataNBT(NBTTagCompound tag) {
 		tag.setInteger("cooldown", cooldown); // cooldown > 0 --> Particles
+		if (this.ritual != null) {
+			tag.setString("ritual", this.ritual.getRegistryName().toString());
+		}
+		if (this.runningPos != null) {
+			NBTTagCompound rp = new NBTTagCompound();
+			rp.setInteger("x", this.runningPos.getX());
+			rp.setInteger("y", this.runningPos.getY());
+			rp.setInteger("z", this.runningPos.getZ());
+			tag.setTag("runningPos", rp);
+		}
 	}
 
 	@Override
 	protected void readModSyncDataNBT(NBTTagCompound tag) {
 		cooldown = tag.getInteger("cooldown");
+		if (tag.hasKey("ritual")) {
+			this.ritual = AdapterIRitual.REGISTRY.getValue(new ResourceLocation(tag.getString("ritual")));
+		}
+		if (tag.hasKey("runningPos")) {
+			NBTTagCompound rp = tag.getCompoundTag("runningPos");
+			this.runningPos = new BlockPos(rp.getInteger("x"), rp.getInteger("y"), rp.getInteger("z"));
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void spawnParticles() {
+		ritual.spawnParticles(world, pos, runningPos != null ? runningPos : pos, rng);
 	}
 
 }

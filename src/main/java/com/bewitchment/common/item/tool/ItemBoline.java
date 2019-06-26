@@ -4,6 +4,7 @@ import com.bewitchment.client.core.IModelRegister;
 import com.bewitchment.client.handler.ModelHandler;
 import com.bewitchment.common.core.statics.ModCreativeTabs;
 import com.bewitchment.common.lib.LibItemName;
+import com.bewitchment.common.lib.LibMod;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,9 +34,8 @@ public class ItemBoline extends ItemShears implements IModelRegister {
 	public ItemBoline() {
 		super();
 		setMaxDamage(600);
-		this.setMaxStackSize(1);
 		setRegistryName(LibItemName.BOLINE);
-		setTranslationKey(LibItemName.BOLINE);
+		setTranslationKey(LibMod.MOD_ID + "." + LibItemName.BOLINE);
 		setCreativeTab(ModCreativeTabs.ITEMS_CREATIVE_TAB);
 	}
 
@@ -53,7 +53,12 @@ public class ItemBoline extends ItemShears implements IModelRegister {
 	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("biome_id")) {
-			tooltip.add(Biome.getBiome(stack.getTagCompound().getInteger("biome_id")).getBiomeName());
+			Biome stored = Biome.getBiome(stack.getTagCompound().getInteger("biome_id"));
+			if (stored == null) {
+				stack.getTagCompound().removeTag("biome_id");
+			} else {
+				tooltip.add(stored.getBiomeName());
+			}
 		}
 	}
 

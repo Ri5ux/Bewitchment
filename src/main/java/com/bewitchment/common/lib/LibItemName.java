@@ -60,15 +60,21 @@ public final class LibItemName {
 	public static final String COLD_IRON_HOE = "cold_iron_hoe";
 	public static final String COLD_IRON_SPADE = "cold_iron_spade";
 	public static final String COLD_IRON_PICKAXE = "cold_iron_pickaxe";
+	public static final String HUDSON_BAT = "hudson_bat";
 
 	//Equipment
 	public static final String SILVER_HELMET = "silver_helmet";
 	public static final String SILVER_CHESTPLATE = "silver_chestplate";
 	public static final String SILVER_LEGGINGS = "silver_leggings";
 	public static final String SILVER_BOOTS = "silver_boots";
+	public static final String COLD_IRON_HELMET = "cold_iron_helmet";
+	public static final String COLD_IRON_CHESTPLATE = "cold_iron_chestplate";
+	public static final String COLD_IRON_LEGGINGS = "cold_iron_leggings";
+	public static final String COLD_IRON_BOOTS = "cold_iron_boots";
 	public static final String WITCHES_HAT = "witches_hat";
 	public static final String WITCHES_ROBES = "witches_robes";
 	public static final String WITCHES_PANTS = "witches_pants";
+	public static final String WITCHES_COWL = "witches_cowl";
 	public static final String VAMPIRE_HAT = "vampire_hat";
 	public static final String VAMPIRE_VEST = "vampire_vest";
 	public static final String VAMPIRE_PANTS = "vampire_pants";
@@ -136,10 +142,14 @@ public final class LibItemName {
 	public static final String EYE_OF_NEWT = "eye_of_newt";
 	public static final String BLINDWORMS_STING = "blindworms_sting";
 	public static final String LIZARD_LEG = "lizard_leg";
+	public static final String URANID_VENOM = "uranid_venom";
+	public static final String HELLHOUND_HORN = "hellhound_horn";
+	public static final String DEMON_HEART = "demon_heart";
 
 	//Materials
 	public static final String SILVER = "silver";
 	public static final String BEWITCHED_LEATHER = "bewitched_leather";
+	public static final String BEWITCHED_HOOD = "bewitched_hood";
 	public static final String VAMPIRE = "vampire";
 	public static final String RITUAL = "ritual";
 	public static final String COLD_IRON = "cold_iron";

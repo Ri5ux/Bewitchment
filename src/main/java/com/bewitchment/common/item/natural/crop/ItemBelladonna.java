@@ -17,12 +17,13 @@ public class ItemBelladonna extends ItemCropFood {
 
 	public ItemBelladonna() {
 		super(LibItemName.BELLADONNA, 2, 1.5F, false);
+		this.setAlwaysEdible();
 		setCreativeTab(ModCreativeTabs.PLANTS_CREATIVE_TAB);
 	}
 
 	@Override
 	protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
 		super.onFoodEaten(stack, worldIn, player);
-		player.addPotionEffect(new PotionEffect(MobEffects.WITHER, 10, 0));
+		player.addPotionEffect(new PotionEffect(MobEffects.WITHER, 10, 2));
 	}
 }

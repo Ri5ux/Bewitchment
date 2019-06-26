@@ -29,12 +29,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public final class ModConfig {
 
 	@Comment("Change vein sizes, generation height and generation chance")
-	@Config.RequiresMcRestart
 	@Config.LangKey("bewitchment.config.world_gen")
 	public static WorldGen WORLD_GEN = new WorldGen();
+
 	@Comment("Customize the client-side only settings")
 	@Config.LangKey("bewitchment.config.client")
 	public static ClientConfig CLIENT = new ClientConfig();
+
 	@Comment("The lower this number, the more time it takes for an altar to realize something has changed around it, the better the TPS")
 	@Config.RangeInt(min = 1, max = 46656)
 	//46656 is the max amount of blocks in altar range, meaning it will scan once per tick. More than that is useless
@@ -68,7 +69,7 @@ public final class ModConfig {
 		@Comment("Salt Ore gen, this determines how much can spawn in a chunk, and how far up")
 		public Salt salt = new Salt();
 		@Comment("Amethyst Ore gen, this determines how much can spawn in a chunk, and how far up")
-		public Amethyst amethyst = new Amethyst();
+		public Amethyst bw_amethyst = new Amethyst();
 		@Comment("Alexandrite Ore gen, this determines how much can spawn in a chunk, and how far up")
 		public Alexandrite alexandrite = new Alexandrite();
 		@Comment("Coquina gen, this determines how much can spawn in a chunk, and how far up")
@@ -81,99 +82,95 @@ public final class ModConfig {
 			public int silver_max_vein = 8;
 			public int silver_min_height = 10;
 			public int silver_max_height = 128;
-			public int silver_gen_chance = 8;
+			public int silver_gen_chance = 25;
 		}
 
 		public static class BloodstoneOre {
 			public int bloodStone_min_vein = 1;
-			public int bloodStone_max_vein = 2;
-			public int bloodStone_min_height = 10;
-			public int bloodStone_max_height = 100;
-			public int bloodStone_gen_chance = 6;
+			public int bloodStone_max_vein = 4;
+			public int bloodStone_min_height = 9;
+			public int bloodStone_max_height = 64;
+			public int bloodStone_gen_chance = 40;
 		}
 
 		public static class Tourmaline {
 			public int tourmaline_min_vein = 1;
-			public int tourmaline_max_vein = 2;
+			public int tourmaline_max_vein = 4;
 			public int tourmaline_min_height = 10;
-			public int tourmaline_max_height = 80;
-			public int tourmaline_gen_chance = 6;
+			public int tourmaline_max_height = 64;
+			public int tourmaline_gen_chance = 40;
 		}
 
 		public static class Malachite {
 			public int malachite_min_vein = 1;
-			public int malachite_max_vein = 2;
-			public int malachite_min_height = 10;
-			public int malachite_max_height = 80;
-			public int malachite_gen_chance = 6;
+			public int malachite_max_vein = 4;
+			public int malachite_min_height = 11;
+			public int malachite_max_height = 64;
+			public int malachite_gen_chance = 40;
 		}
 
 		public static class TigersEye {
 			public int tigersEye_min_vein = 1;
-			public int tigersEye_max_vein = 2;
-			public int tigersEye_min_height = 10;
-			public int tigersEye_max_height = 60;
-			public int tigersEye_gen_chance = 6;
+			public int tigersEye_max_vein = 4;
+			public int tigersEye_min_height = 12;
+			public int tigersEye_max_height = 64;
+			public int tigersEye_gen_chance = 40;
 		}
 
 		public static class Nuummite {
 			public int nuummite_min_vein = 1;
-			public int nuummite_max_vein = 2;
-			public int nuummite_min_height = 10;
-			public int nuummite_max_height = 80;
-			public int nuummite_gen_chance = 6;
+			public int nuummite_max_vein = 4;
+			public int nuummite_min_height = 13;
+			public int nuummite_max_height = 64;
+			public int nuummite_gen_chance = 40;
 		}
 
 		public static class Garnet {
 			public int garnet_min_vein = 1;
-			public int garnet_max_vein = 2;
-			public int garnet_min_height = 10;
-			public int garnet_max_height = 65;
-			public int garnet_gen_chance = 6;
+			public int garnet_max_vein = 4;
+			public int garnet_min_height = 14;
+			public int garnet_max_height = 64;
+			public int garnet_gen_chance = 40;
 		}
 
 		public static class Jasper {
 			public int jasper_min_vein = 1;
-			public int jasper_max_vein = 2;
-			public int jasper_min_height = 10;
-			public int jasper_max_height = 80;
-			public int jasper_gen_chance = 6;
+			public int jasper_max_vein = 4;
+			public int jasper_min_height = 15;
+			public int jasper_max_height = 64;
+			public int jasper_gen_chance = 40;
 		}
 
 		public static class Salt {
 			public int salt_min_vein = 1;
-			public int salt_max_vein = 4;
+			public int salt_max_vein = 8;
 			public int salt_min_height = 10;
 			public int salt_max_height = 128;
-			public int salt_gen_chance = 6;
+			public int salt_gen_chance = 35;
 		}
 
 		public static class Amethyst {
 			public int amethyst_min_vein = 1;
 			public int amethyst_max_vein = 4;
-			public int amethyst_min_height = 10;
-			public int amethyst_max_height = 65;
-			public int amethyst_gen_chance = 6;
+			public int amethyst_min_height = 16;
+			public int amethyst_max_height = 64;
+			public int amethyst_gen_chance = 40;
 		}
 
 		public static class Alexandrite {
 			public int alexandrite_min_vein = 1;
-			public int alexandrite_max_vein = 2;
-			public int alexandrite_min_height = 10;
-			public int alexandrite_max_height = 40;
-			public int alexandrite_gen_chance = 6;
+			public int alexandrite_max_vein = 4;
+			public int alexandrite_min_height = 17;
+			public int alexandrite_max_height = 64;
+			public int alexandrite_gen_chance = 40;
 		}
 
 		public static class Coquina {
-			public int coquina_min_vein = 1;
-			public int coquina_max_vein = 4;
-			public int coquina_min_height = 55;
-			public int coquina_max_height = 65;
-			public int coquina_gen_chance = 4;
+			public int coquina_gen_chance = 5;
 		}
 
 		public static class Beehive {
-			public int beehive_gen_chance = 12;
+			public int beehive_gen_chance = 15;
 		}
 	}
 

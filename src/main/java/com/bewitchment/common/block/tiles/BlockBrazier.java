@@ -48,6 +48,12 @@ public class BlockBrazier extends BlockMod implements IInfusionStabiliserExt {
 
 	@SuppressWarnings("deprecation")
 	@Override
+	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+		return BlockFaceShape.UNDEFINED;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		final EnumFacing facing = EnumFacing.byHorizontalIndex(meta & 0b11);
 		final boolean hanging = ((meta >> 2) & 1) == 1;
@@ -122,12 +128,6 @@ public class BlockBrazier extends BlockMod implements IInfusionStabiliserExt {
 		return this.getDefaultState().withProperty(FACING, enumfacing.getOpposite()).withProperty(HANGING, hang);
 	}
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
-		return BlockFaceShape.UNDEFINED;
-	}
-
 	@Override
 	@Optional.Method(modid = "thaumcraft")
 	public boolean canStabaliseInfusion(World world, BlockPos pos) {
@@ -137,6 +137,6 @@ public class BlockBrazier extends BlockMod implements IInfusionStabiliserExt {
 	@Override
 	@Optional.Method(modid = "thaumcraft")
 	public float getStabilizationAmount(World world, BlockPos pos) {
-		return 0;
+		return 8;
 	}
 }

@@ -1,6 +1,7 @@
 package com.bewitchment.common.content.ritual;
 
 import com.bewitchment.api.ritual.IRitual;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -19,15 +20,21 @@ public class RitualImpl implements IRitual {
 	private int time, circles, altarStartingPower, tickPower;
 	private NonNullList<ItemStack> output;
 	private NonNullList<Ingredient> input;
+	private NonNullList<Class<? extends Entity>> sacrifices;
 
-	public RitualImpl(ResourceLocation registryName, @Nonnull NonNullList<Ingredient> input, @Nonnull NonNullList<ItemStack> output, int timeInTicks, int circles, int altarStartingPower, int powerPerTick) {
+	public RitualImpl(ResourceLocation registryName, @Nonnull NonNullList<Ingredient> input, @Nonnull NonNullList<Class<? extends Entity>> sacrifices, @Nonnull NonNullList<ItemStack> output, int timeInTicks, int circles, int altarStartingPower, int powerPerTick) {
 		this.time = timeInTicks;
 		this.input = input;
+		this.sacrifices = sacrifices;
 		this.output = output;
 		this.circles = circles;
 		this.altarStartingPower = altarStartingPower;
 		this.tickPower = powerPerTick;
 		setRegistryName(registryName);
+	}
+
+	public RitualImpl(ResourceLocation registryName, @Nonnull NonNullList<Ingredient> input, @Nonnull NonNullList<ItemStack> output, int timeInTicks, int circles, int altarStartingPower, int powerPerTick) {
+		this(registryName, input, NonNullList.create(), output, timeInTicks, circles, altarStartingPower, powerPerTick);
 	}
 
 	@Override
@@ -64,6 +71,11 @@ public class RitualImpl implements IRitual {
 			copy.add(i);
 		}
 		return copy;
+	}
+
+	@Override
+	public NonNullList<Class<? extends Entity>> getSacrifices() {
+		return sacrifices;
 	}
 
 	@Override
@@ -106,5 +118,4 @@ public class RitualImpl implements IRitual {
 	public int getRequiredStartingPower() {
 		return altarStartingPower;
 	}
-
 }

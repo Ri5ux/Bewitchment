@@ -18,6 +18,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -66,21 +67,21 @@ public class TileEntityWitchAltar extends ModTileEntity implements ITickable {
 	@SubscribeEvent
 	public static void onUpgradeChecked(AltarModifierCheckEvent evt) {
 		Block b = evt.getState().getBlock();
-		if (b == Blocks.DIAMOND_BLOCK || b == Blocks.SKULL || (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == ModItems.pentacle)) {
+		if (b == Blocks.DRAGON_EGG || b == Blocks.SKULL || (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == ModItems.pentacle) || (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == Items.GOLDEN_APPLE || (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == ModItems.demon_heart || (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == ModItems.heart || (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == Items.GOLDEN_CARROT || (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == ModItems.tarots || (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == Items.NETHER_STAR))))))) {
 			evt.getController().use(EnumUpgradeClass.PENTACLES, evt.getPos());
 			return;
 		}
-		if (b == Blocks.FLOWER_POT || b == ModBlocks.goblet || b == ModBlocks.gem_bowl) {
+		if (b == Blocks.FLOWER_POT || b == ModBlocks.goblet || b == ModBlocks.gem_bowl || (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == Items.BUCKET || (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == ModItems.magic_salve || (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == ModItems.glass_jar)))) {
 			evt.getController().use(EnumUpgradeClass.CUPS, evt.getPos());
 			return;
 		}
-		if (b == Blocks.TORCH || b instanceof BlockCandle || b instanceof BlockLantern) {
+		if (b == Blocks.TORCH || b instanceof BlockCandle || b instanceof BlockLantern || b == Blocks.GLOWSTONE) {
 			evt.getController().use(EnumUpgradeClass.WANDS, evt.getPos());
 			return;
 		}
 		if (b == ModBlocks.placed_item) {
 			ItemStack is = ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem();
-			if (is.getItem() == ModItems.athame || is.getItem() == ModItems.boline || is.getItem() == ModItems.silver_sword || is.getItem() == ModItems.cold_iron_sword) {
+			if (is.getItem() == ModItems.athame || is.getItem() == ModItems.boline || is.getItem() == ModItems.silver_sword || is.getItem() == ModItems.cold_iron_sword || is.getItem() == Items.GOLDEN_SWORD || is.getItem() == Items.IRON_SWORD || is.getItem() == Items.DIAMOND_SWORD) {
 				evt.getController().use(EnumUpgradeClass.SWORDS, evt.getPos());
 				return;
 			}
@@ -90,14 +91,22 @@ public class TileEntityWitchAltar extends ModTileEntity implements ITickable {
 	@SubscribeEvent
 	public static void setModifiers(AltarModifierCollectionEvent evt) {
 		Block b = evt.getState().getBlock();
-		if (b == Blocks.DIAMOND_BLOCK) {
-			evt.extraGain = 1000;
-			evt.multiplier = 200;
+		if (b == Blocks.DRAGON_EGG) {
+			evt.extraGain = 12;
+			evt.multiplier = 4.5;
 			return;
 		}
 		if (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == ModItems.pentacle) {
 			evt.extraGain = 3;
-			evt.multiplier = -0.2;
+			evt.multiplier = 0.2;
+		}
+		if (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == ModItems.tarots) {
+			evt.extraGain = 5;
+			evt.multiplier = 0.4;
+		}
+		if (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == Items.NETHER_STAR) {
+			evt.extraGain = 8;
+			evt.multiplier = 2.5;
 		}
 		if (b == Blocks.SKULL) {
 			TileEntitySkull tes = (TileEntitySkull) evt.getWorld().getTileEntity(evt.getPos());
@@ -110,8 +119,8 @@ public class TileEntityWitchAltar extends ModTileEntity implements ITickable {
 					break;
 				case 1:
 				case 3://Wither skull and player skull
-					evt.extraGain = 2;
-					evt.multiplier = 0.2;
+					evt.extraGain = 3;
+					evt.multiplier = 0.3;
 					break;
 				case 5: //Dragon
 					evt.extraGain = 2;
@@ -129,8 +138,12 @@ public class TileEntityWitchAltar extends ModTileEntity implements ITickable {
 		if (b == ModBlocks.lantern) {
 			evt.extraGain = 2;
 		}
-		if (b == ModBlocks.revealing_lantern) {
+		if (b == Blocks.GLOWSTONE) {
 			evt.extraGain = 3;
+			return;
+		}
+		if (b == ModBlocks.revealing_lantern) {
+			evt.extraGain = 4;
 		}
 		if (b instanceof BlockCandle) {
 			if (((BlockCandle) b).isLit()) {
@@ -157,6 +170,36 @@ public class TileEntityWitchAltar extends ModTileEntity implements ITickable {
 			} else {
 				evt.multiplier = 0.05;
 			}
+			return;
+		}
+		if (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == ModItems.glass_jar) {
+			evt.multiplier = 0.03;
+			return;
+		}
+		if (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == ModItems.magic_salve) {
+			evt.multiplier = 0.35;
+			return;
+		}
+		if (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == Items.BUCKET) {
+			evt.multiplier = 0.15;
+			return;
+		}
+		if (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == Items.GOLDEN_CARROT) {
+			evt.multiplier = 0.15;
+			evt.extraGain = 2;
+			return;
+		}
+		if (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == Items.GOLDEN_APPLE) {
+			evt.multiplier = 0.35;
+			evt.extraGain = 4;
+			return;
+		}
+		if (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == ModItems.demon_heart) {
+			evt.multiplier = 3.13;
+			return;
+		}
+		if (b == ModBlocks.placed_item && ((TileEntityPlacedItem) evt.getWorld().getTileEntity(evt.getPos())).getItem().getItem() == ModItems.heart) {
+			evt.multiplier = 1.11;
 			return;
 		}
 		if (b == ModBlocks.gem_bowl) {

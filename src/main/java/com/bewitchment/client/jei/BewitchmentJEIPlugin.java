@@ -2,13 +2,14 @@ package com.bewitchment.client.jei;
 
 import com.bewitchment.api.cauldron.IBrewEffect;
 import com.bewitchment.api.cauldron.IBrewModifier;
-import com.bewitchment.api.ritual.EnumGlyphType;
 import com.bewitchment.client.jei.components.*;
 import com.bewitchment.common.block.ModBlocks;
 import com.bewitchment.common.content.cauldron.BrewData;
 import com.bewitchment.common.content.cauldron.CauldronCraftingRecipe;
 import com.bewitchment.common.content.cauldron.CauldronRegistry;
 import com.bewitchment.common.content.ritual.AdapterIRitual;
+import com.bewitchment.common.crafting.DistilleryRecipe;
+import com.bewitchment.common.crafting.ModDistilleryRecipes;
 import com.bewitchment.common.crafting.OvenSmeltingRecipe;
 import com.bewitchment.common.crafting.SpinningThreadRecipe;
 import com.bewitchment.common.item.ModItems;
@@ -19,19 +20,11 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.IRecipeWrapperFactory;
 import net.minecraft.item.ItemStack;
 
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @JEIPlugin
 public class BewitchmentJEIPlugin implements IModPlugin {
-	protected static int compareRituals(AdapterIRitual a, AdapterIRitual b) {
-		if (a == b)
-			return 0;
-		int av = a.getInput().size() / 3;
-		int bv = b.getInput().size() / 3;
-		av += a.getCircles() & 3;
-		bv += b.getCircles() & 3;
-		return av > bv ? 1 : -1;
-	}
 
 	@Override
 	public void registerCategories(IRecipeCategoryRegistration registry) {
@@ -41,13 +34,16 @@ public class BewitchmentJEIPlugin implements IModPlugin {
 		registry.addRecipeCategories(new BrewingCategory(registry.getJeiHelpers().getGuiHelper()));
 		registry.addRecipeCategories(new BrewModifierCategory(registry.getJeiHelpers().getGuiHelper()));
 		registry.addRecipeCategories(new CauldronCraftingCategory(registry.getJeiHelpers().getGuiHelper()));
+		registry.addRecipeCategories(new DistilleryCategory(registry.getJeiHelpers().getGuiHelper()));
 	}
 
 	@Override
 	public void register(IModRegistry registry) {
 		registry.handleRecipes(AdapterIRitual.class, new RitualWrapperFactory(registry.getJeiHelpers().getGuiHelper()), RitualCategory.UID);
-		registry.addRecipes(AdapterIRitual.REGISTRY.getValuesCollection().stream().sorted(BewitchmentJEIPlugin::compareRituals).collect(Collectors.toList()), RitualCategory.UID);
-		registry.addRecipeCatalyst(new ItemStack(ModItems.ritual_chalk, 1, EnumGlyphType.GOLDEN.ordinal()), RitualCategory.UID);
+		registry.addRecipes(AdapterIRitual.REGISTRY.getValuesCollection().stream()
+				.sorted(Comparator.comparingInt(air -> (air.getInput().size() / 3) + (air.getCircles() & 3)))
+				.collect(Collectors.toList()), RitualCategory.UID);
+		registry.addRecipeCatalyst(new ItemStack(ModItems.ritual_chalk_golden), RitualCategory.UID);
 
 		registry.handleRecipes(SpinningThreadRecipe.class, i -> new LoomWrapper(i), LoomCategory.UID);
 		registry.addRecipes(SpinningThreadRecipe.REGISTRY.getValuesCollection(), LoomCategory.UID);
@@ -68,6 +64,10 @@ public class BewitchmentJEIPlugin implements IModPlugin {
 		registry.handleRecipes(CauldronCraftingRecipe.class, CauldronCraftingWrapper::new, CauldronCraftingCategory.UID);
 		registry.addRecipes(CauldronRegistry.CRAFTING_REGISTRY, CauldronCraftingCategory.UID);
 		registry.addRecipeCatalyst(new ItemStack(ModBlocks.cauldron), CauldronCraftingCategory.UID);
+
+		registry.handleRecipes(DistilleryRecipe.class, DistilleryWrapper::new, DistilleryCategory.UID);
+		registry.addRecipes(ModDistilleryRecipes.REGISTRY.getValuesCollection(), DistilleryCategory.UID);
+		registry.addRecipeCatalyst(new ItemStack(ModBlocks.distillery), DistilleryCategory.UID);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import com.bewitchment.api.cauldron.IBrewEffect;
 import com.bewitchment.api.cauldron.IBrewModifierList;
 import com.bewitchment.common.content.cauldron.BrewData;
 import com.bewitchment.common.content.cauldron.BrewData.BrewEntry;
+import com.bewitchment.common.content.cauldron.BrewMod;
 import com.bewitchment.common.content.cauldron.BrewModifierListImpl;
 import com.bewitchment.common.content.cauldron.CauldronRegistry;
 import com.bewitchment.common.core.helper.RomanNumberHelper;
@@ -32,7 +33,7 @@ public class ItemBrew extends ItemMod {
 
 	public ItemBrew(String id) {
 		super(id);
-		this.setMaxStackSize(1);
+		this.setMaxStackSize(16);
 		this.setHasSubtypes(true);
 		this.setCreativeTab(ModCreativeTabs.BREW_CREATIVE_TAB);
 	}
@@ -46,10 +47,10 @@ public class ItemBrew extends ItemMod {
 				tooltip.add(color + I18n.format(brewEntry.getPotion().getName()));
 				if (!list.getModifiers().isEmpty()) {
 					list.getModifiers().stream().filter(modifier -> list.getLevel(modifier).isPresent()).forEach(bm -> {
-						tooltip.add(TextFormatting.DARK_PURPLE + I18n.format("brew.parameters.formatting", bm.getTooltipString(brewEntry.getModifierList().getLevel(bm).get())));
+						tooltip.add(TextFormatting.DARK_PURPLE + I18n.format("brew.bewitchment.parameters.formatting", bm.getTooltipString(brewEntry.getModifierList().getLevel(bm).get())));
 					});
 				} else {
-					tooltip.add(TextFormatting.DARK_GRAY.toString() + I18n.format("brew.parameters.none"));
+					tooltip.add(TextFormatting.DARK_GRAY.toString() + I18n.format("brew.bewitchment.parameters.none"));
 				}
 			} else {
 				Optional<Integer> power = list.getLevel(DefaultModifiers.POWER);
@@ -61,17 +62,19 @@ public class ItemBrew extends ItemMod {
 				}
 				lengthString = getLengthTTip(lengthMod, brewEntry.getPotion(), stack.getItem());
 
-				tooltip.add(color + I18n.format("brew.effects.formatting", I18n.format(brewEntry.getPotion().getName()), powerString, lengthString).replace("  ", " "));
-
-				String ref = TextFormatting.DARK_GRAY + I18n.format(brewEntry.getPotion().getName() + ".desc");
-				tooltip.add(I18n.format("brew.description.formatting", ref));
+				tooltip.add(color + I18n.format("brew.bewitchment.effects.formatting", I18n.format(brewEntry.getPotion().getName()), powerString, lengthString).replace("  ", " "));
+				if (brewEntry.getPotion() instanceof BrewMod) {
+					String ref = TextFormatting.DARK_GRAY + I18n.format(brewEntry.getPotion().getName() + ".desc");
+					tooltip.add(I18n.format("brew.bewitchment.description.formatting", ref));
+				}
 			}
 		});
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static String getLengthTTip(int lengthMod, Potion potion, Item item) {
 		if (potion.isInstant()) {
-			return I18n.format("brew.instant");
+			return I18n.format("brew.bewitchment.instant");
 		}
 		IBrewEffect effect = BewitchmentAPI.getAPI().getBrewFromPotion(potion);
 		int baseDuration = effect.getDefaultDuration();

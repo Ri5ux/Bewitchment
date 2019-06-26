@@ -4,6 +4,8 @@ import com.bewitchment.common.core.statics.ModSounds;
 import com.bewitchment.common.entity.living.EntityMultiSkin;
 import com.bewitchment.common.lib.LibMod;
 import com.google.common.collect.Sets;
+import net.ilexiconn.llibrary.server.animation.Animation;
+import net.ilexiconn.llibrary.server.animation.IAnimatedEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockLog;
@@ -15,6 +17,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
@@ -35,12 +38,16 @@ import net.minecraft.world.World;
 
 import java.util.Set;
 
-public class EntityOwl extends EntityMultiSkin {
+//ENTITYFAMILIAR
+public class EntityOwl extends EntityMultiSkin implements IAnimatedEntity {
 
 	private static final ResourceLocation loot = new ResourceLocation(LibMod.MOD_ID, "entities/owl");
 	private static final Set<Item> TAME_ITEMS = Sets.newHashSet(Items.RABBIT, Items.CHICKEN);
-	//	private static final String[] names = {"Owlmighty", "Owliver", "Owl Capone", "Owleister Crowley", "Owlie", "Owlivia", "Owlive", "Hedwig", "Archimedes", "Owlexander", "Robin Hoot", "Owlex", "Athena", "Strix", "Minerva", "Ascalaphus", "Lechuza", "Stolas", "Andras", "Kikiyaon", "Chickcharney", "Hootling"};
+	private static final String[] names = {"Owlmighty", "Owliver", "Owl Capone", "Owleister Crowley", "Owlie", "Owlivia", "Owlive", "Hedwig", "Archimedes", "Owlexander", "Robin Hoot", "Owlex", "Athena", "Strix", "Minerva", "Ascalaphus", "Lechuza", "Stolas", "Andras", "Kikiyaon", "Chickcharney", "Hootling"};
 	private static final DataParameter<Integer> TINT = EntityDataManager.createKey(EntityOwl.class, DataSerializers.VARINT);
+	private static final double maxHPWild = 8;
+	private int animationTick;
+	private Animation currentAnimation;
 
 	public EntityOwl(World worldIn) {
 		super(worldIn);
@@ -56,6 +63,7 @@ public class EntityOwl extends EntityMultiSkin {
 	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
+		this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 		this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
 		this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(0.6);
 		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(2.5D);
@@ -78,16 +86,22 @@ public class EntityOwl extends EntityMultiSkin {
 
 	@Override
 	protected void initEntityAI() {
+		this.aiSit = new EntityAISit(this);
 		this.tasks.addTask(1, new EntityAISwimming(this));
 		this.tasks.addTask(3, new EntityAIAttackMelee(this, 0.5D, false));
 		this.tasks.addTask(5, new EntityAILookIdle(this));
 		this.tasks.addTask(4, new EntityAIWatchClosest2(this, EntityPlayer.class, 5f, 1f));
 		this.tasks.addTask(2, new EntityAIFleeSun(this, 1d));
 		this.tasks.addTask(4, new EntityAIWanderAvoidWaterFlying(this, 0.8));
+		this.tasks.addTask(5, new EntityAIWander(this, 0.5D));
 		this.tasks.addTask(3, new EntityAIMate(this, 0.8d));
 		this.tasks.addTask(4, this.aiSit);
 		this.targetTasks.addTask(4, new EntityAITargetNonTamed<EntityLivingBase>(this, EntityLivingBase.class, false, e -> e instanceof EntityRabbit || e instanceof EntityBat || e instanceof EntityChicken || e instanceof EntityParrot || e instanceof EntityBlindworm || e instanceof EntityLizard));
 		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
+		this.tasks.addTask(4, new EntityAIFollowParent(this, 0.5D));
+		this.targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this));
+		this.targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this));
+		this.tasks.addTask(2, new EntityAIFollowOwnerFlying(this, 1.0D, 5.0F, 1.0F));
 	}
 
 	@Override
@@ -125,7 +139,13 @@ public class EntityOwl extends EntityMultiSkin {
 				}
 				return true;
 			}
-			return true;
+			if (this.isOwner(player) && !this.world.isRemote && !this.isBreedingItem(itemstack)) {
+				this.aiSit.setSitting(!this.isSitting());
+				this.isJumping = false;
+				this.navigator.clearPath();
+				this.setAttackTarget((EntityLivingBase) null);
+			}
+			return super.processInteract(player, hand);
 		}
 	}
 
@@ -210,15 +230,22 @@ public class EntityOwl extends EntityMultiSkin {
 		}
 	}
 
-	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount) {
 		if (this.isEntityInvulnerable(source)) {
 			return false;
+		} else {
+			Entity entity = source.getTrueSource();
+
+			if (this.aiSit != null) {
+				this.setSitting(false);
+			}
+
+			if (entity != null && !(entity instanceof EntityPlayer) && !(entity instanceof EntityArrow)) {
+				amount = (amount + 1.0F) / 2.0F;
+			}
+
+			return super.attackEntityFrom(source, amount);
 		}
-		if (this.aiSit != null) {
-			this.aiSit.setSitting(false);
-		}
-		return super.attackEntityFrom(source, amount);
 	}
 
 	@Override
@@ -226,4 +253,28 @@ public class EntityOwl extends EntityMultiSkin {
 		return 4;
 	}
 
+	@Override
+	public int getAnimationTick() {
+		return 0;
+	}
+
+	@Override
+	public void setAnimationTick(int tick) {
+
+	}
+
+	@Override
+	public Animation getAnimation() {
+		return null;
+	}
+
+	@Override
+	public void setAnimation(Animation animation) {
+
+	}
+
+	@Override
+	public Animation[] getAnimations() {
+		return new Animation[0];
+	}
 }

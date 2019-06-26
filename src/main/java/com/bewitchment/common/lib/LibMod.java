@@ -14,21 +14,25 @@ public final class LibMod {
 	public static final String MOD_NAME = "Bewitchment";
 
 	//Version of MOD
-	public static final String MOD_VER = "0.0.16";
+	public static final String MOD_VER = "@VERSION@";
 
 	//Dependency
-	public static final String DEPENDENCIES = "required-after:forge@[14.23.4.2755,];"
+	public static final String DEPENDENCIES = "required-after:forge@[14.23.5.2814,];"
 			+ "required-after:patchouli@[1.0-6,]"
 			+ "after:jei@[4.9.1.168,];"
 			+ "after:waila@[1.8.24-B39_1.12,];"
 			+ "required-after:baubles@[1.5.2,];"
-			+ "after:thaumcraft@[1.12.2:6.1.BETA26,]";
+			+ "after:thaumcraft@[1.12.2:6.1.BETA26,];"
+			+ "required-after:llibrary@[1.7.17,]";
 
 	//Client proxy location
 	public static final String PROXY_CLIENT = "com.bewitchment.client.core.ClientProxy";
 
 	//Server proxy location
 	public static final String PROXY_COMMON = "com.bewitchment.common.core.proxy.ServerProxy";
+
+	//SHA1 fingerprint
+	public static final String FINGERPRINT = "@FINGERPRINT@";
 
 	private LibMod() {
 	}

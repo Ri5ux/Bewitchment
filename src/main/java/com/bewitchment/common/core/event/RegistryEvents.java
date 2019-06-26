@@ -34,29 +34,29 @@ public final class RegistryEvents {
 	@SubscribeEvent
 	public static void registerItems(RegistryEvent.Register<Item> event) {
 		registerCrop(WHITE_SAGE, ModBlocks.crop_white_sage
-				, new ItemCropFood(LibItemName.WHITE_SAGE, 1, 0.4F, false), LibItemName.SEED_WHITE_SAGE);
+				, new ItemWhiteSage(), LibItemName.SEED_WHITE_SAGE);
 		registerCrop(WORMWOOD, ModBlocks.crop_wormwood
-				, new ItemCropFood(LibItemName.WORMWOOD, 4, 0.8F, false), LibItemName.SEED_WORMWOOD);
+				, new ItemWormwood(), LibItemName.SEED_WORMWOOD);
 		registerCrop(SILPHIUM, ModBlocks.crop_silphium
-				, new ItemCropFood(LibItemName.SILPHIUM, 4, 6F, false), LibItemName.SEED_SILPHIUM);
+				, new ItemSilphium(), LibItemName.SEED_SILPHIUM);
 		registerCrop(MANDRAKE, ModBlocks.crop_mandrake_root
 				, new ItemMandrake(), LibItemName.SEED_MANDRAKE);
 		registerCrop(GARLIC, ModBlocks.crop_garlic
-				, new ItemCropFood(LibItemName.GARLIC, 4, 6F, false), LibItemName.SEED_GARLIC);
+				, new ItemGarlic(), LibItemName.SEED_GARLIC);
 		registerCrop(TULSI, ModBlocks.crop_tulsi
-				, new ItemCropFood(LibItemName.TULSI, 1, 0.4F, false), LibItemName.SEED_TULSI);
+				, new ItemTulsi(), LibItemName.SEED_TULSI);
 		registerCrop(KENAF, ModBlocks.crop_kenaf
-				, new ItemCropFood(LibItemName.KENAF, 4, 6F, false), LibItemName.SEED_KENAF);
+				, new ItemKenaf(), LibItemName.SEED_KENAF);
 		registerCrop(MINT, ModBlocks.crop_mint
-				, new ItemCropFood(LibItemName.MINT, 1, 2F, false), LibItemName.SEED_MINT);
+				, new ItemMint(), LibItemName.SEED_MINT);
 		registerCrop(HELLEBORE, ModBlocks.crop_hellebore,
-				new ItemCropFood(LibItemName.HELLEBORE, 2, 0.1F, false), LibItemName.SEED_HELLEBORE);
+				new ItemHellebore(), LibItemName.SEED_HELLEBORE);
 		registerCrop(CHRYSANTHEMUM, ModBlocks.crop_chrysanthemum,
-				new ItemCropFood(LibItemName.CHRYSANTHEMUM, 2, 0.1F, false), LibItemName.SEED_CHRYSANTHEMUM);
+				new ItemChrysanthemum(), LibItemName.SEED_CHRYSANTHEMUM);
 		registerCrop(SAGEBRUSH, ModBlocks.crop_sagebrush,
-				new ItemCropFood(LibItemName.SAGEBRUSH, 2, 0.1F, false), LibItemName.SEED_SAGEBRUSH);
+				new ItemSageBrush(), LibItemName.SEED_SAGEBRUSH);
 		registerCrop(INFESTED_WHEAT, ModBlocks.crop_infested_wheat,
-				new ItemCropFood(LibItemName.INFESTED_WHEAT, 1, 0.1F, false), LibItemName.WITCHWEED);
+				new ItemInfestedWheat(), LibItemName.WITCHWEED);
 		registerCrop(BELLADONNA, ModBlocks.crop_belladonna
 				, new ItemBelladonna(), LibItemName.SEED_BELLADONNA);
 		registerCrop(ACONITUM, ModBlocks.crop_aconitum

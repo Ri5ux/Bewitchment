@@ -3,9 +3,11 @@ package com.bewitchment.common.item.tool;
 
 import com.bewitchment.client.core.IModelRegister;
 import com.bewitchment.client.handler.ModelHandler;
+import com.bewitchment.common.core.helper.MobHelper;
 import com.bewitchment.common.core.statics.ModCreativeTabs;
 import com.bewitchment.common.item.ModMaterials;
 import com.bewitchment.common.lib.LibItemName;
+import com.bewitchment.common.lib.LibMod;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
@@ -33,16 +35,15 @@ public class ItemSilverPickaxe extends ItemPickaxe implements IModelRegister {
 
 	public ItemSilverPickaxe() {
 		super(ModMaterials.TOOL_SILVER);
-		this.setMaxStackSize(1);
 		setRegistryName(LibItemName.SILVER_PICKAXE);
-		setTranslationKey(LibItemName.SILVER_PICKAXE);
+		setTranslationKey(LibMod.MOD_ID + "." + LibItemName.SILVER_PICKAXE);
 		setCreativeTab(ModCreativeTabs.ITEMS_CREATIVE_TAB);
 	}
 
 	@Override
 	public boolean hitEntity(ItemStack stack, EntityLivingBase target, @Nonnull EntityLivingBase attacker) {
 		if (!target.world.isRemote) {
-			if (target.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD && attacker instanceof EntityPlayer) {
+			if (target.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD || MobHelper.isCorporealUndead(target) && attacker instanceof EntityPlayer) {
 				target.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) attacker), 12);
 				stack.damageItem(25, attacker);
 			} else {
@@ -53,14 +54,10 @@ public class ItemSilverPickaxe extends ItemPickaxe implements IModelRegister {
 		return true;
 	}
 
-	public String getNameInefficiently(ItemStack stack) {
-		return getTranslationKey().substring(5);
-	}
-
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, @Nullable World player, List<String> tooltip, ITooltipFlag advanced) {
-		tooltip.add(TextFormatting.GRAY + I18n.format("witch.tooltip." + getNameInefficiently(stack) + "_description.name"));
+		tooltip.add(TextFormatting.GRAY + I18n.format("tooltip.bewitchment." + getToolMaterialName() + "_tool" + "_description.name"));
 	}
 
 	@SideOnly(Side.CLIENT)

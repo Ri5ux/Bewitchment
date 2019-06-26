@@ -19,12 +19,15 @@ import java.util.Random;
  */
 public class CropKenaf extends BlockCrop {
 
+	//GROWS TALL
+
 	private static final AxisAlignedBB[] KENAF_AABB = new AxisAlignedBB[]{new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.375D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.625D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D), null, null, new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D)};
 
 	public CropKenaf() {
 		super(LibBlockName.CROP_KENAF, 4);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		return KENAF_AABB[getAge(state)];
@@ -32,7 +35,7 @@ public class CropKenaf extends BlockCrop {
 
 	@Override
 	protected boolean canSustainBush(IBlockState state) {
-		return state.getBlock() == Blocks.FARMLAND || state.getBlock() == this;
+		return state.getBlock() == Blocks.FARMLAND || (state.getBlock() == this && isMaxAge(state));
 	}
 
 	@Override

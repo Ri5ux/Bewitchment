@@ -5,7 +5,10 @@ import com.bewitchment.api.ritual.EnumGlyphType;
 import com.bewitchment.api.spell.ISpell;
 import com.bewitchment.api.state.StateProperties;
 import com.bewitchment.client.ResourceLocations;
-import com.bewitchment.client.core.event.*;
+import com.bewitchment.client.core.event.GirdleOfTheWoodedHUD;
+import com.bewitchment.client.core.event.MimicEventHandler;
+import com.bewitchment.client.core.event.MiscEventHandler;
+import com.bewitchment.client.core.event.RenderingHacks;
 import com.bewitchment.client.core.hud.*;
 import com.bewitchment.client.fx.ParticleF;
 import com.bewitchment.client.gui.GuiTarots;
@@ -23,20 +26,27 @@ import com.bewitchment.common.block.ModBlocks;
 import com.bewitchment.common.block.misc.BlockWitchFire;
 import com.bewitchment.common.content.cauldron.BrewData;
 import com.bewitchment.common.content.tarot.TarotHandler.TarotInfo;
-import com.bewitchment.common.core.net.GuiHandler;
 import com.bewitchment.common.core.proxy.ISidedProxy;
+import com.bewitchment.common.core.statemappers.AllDefaultModelStateMapper;
 import com.bewitchment.common.entity.*;
 import com.bewitchment.common.entity.living.animals.*;
-import com.bewitchment.common.entity.spirits.demons.EntityUran;
+import com.bewitchment.common.entity.spirits.demons.*;
+import com.bewitchment.common.entity.spirits.ghosts.EntityBlackDog;
 import com.bewitchment.common.item.ModItems;
 import com.bewitchment.common.item.magic.ItemSpellPage;
 import com.bewitchment.common.lib.LibGui;
+import com.bewitchment.common.lib.LibMod;
 import com.bewitchment.common.tile.tiles.TileEntityCauldron;
 import com.bewitchment.common.tile.tiles.TileEntityGemBowl;
 import com.bewitchment.common.tile.tiles.TileEntityPlacedItem;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.renderer.ItemMeshDefinition;
+import net.minecraft.client.renderer.block.model.ModelBakery;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
@@ -45,13 +55,16 @@ import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -59,7 +72,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.awt.*;
@@ -75,6 +87,13 @@ public class ClientProxy implements ISidedProxy {
 
 	@SubscribeEvent
 	public static void registerItemModels(ModelRegistryEvent event) {
+		unifyVariants(ModBlocks.ember_grass);
+		unifyVariants(ModBlocks.leaves_cypress);
+		unifyVariants(ModBlocks.leaves_elder);
+		unifyVariants(ModBlocks.leaves_juniper);
+		unifyVariants(ModBlocks.leaves_yew);
+		unifyVariants(ModBlocks.gem_bowl);
+		unifyVariants(ModBlocks.moonbell);
 		ModelHandler.registerModels();
 	}
 
@@ -85,6 +104,10 @@ public class ClientProxy implements ISidedProxy {
 		event.getMap().registerSprite(ResourceLocations.FLAME);
 		event.getMap().registerSprite(ResourceLocations.GRAY_WATER);
 		event.getMap().registerSprite(ResourceLocations.BAT);
+	}
+
+	private static void unifyVariants(Block block) {
+		ModelLoader.setCustomStateMapper(block, new AllDefaultModelStateMapper(block));
 	}
 
 	@Override
@@ -99,7 +122,7 @@ public class ClientProxy implements ISidedProxy {
 		HudController.registerNewComponent(new VampireBloodBarHUD());
 
 		MinecraftForge.EVENT_BUS.register(new GirdleOfTheWoodedHUD());
-		MinecraftForge.EVENT_BUS.register(new WerewolfEventHandler());
+		//MinecraftForge.EVENT_BUS.register(new WerewolfEventHandler());
 		MinecraftForge.EVENT_BUS.register(new RenderingHacks());
 		MinecraftForge.EVENT_BUS.register(new MiscEventHandler(Minecraft.getMinecraft()));
 	}
@@ -191,8 +214,6 @@ public class ClientProxy implements ISidedProxy {
 
 		items.registerItemColorHandler(ColorPropertyHandler.INSTANCE, Item.getItemFromBlock(ModBlocks.lantern), Item.getItemFromBlock(ModBlocks.revealing_lantern));
 
-		NetworkRegistry.INSTANCE.registerGuiHandler(Bewitchment.instance, new GuiHandler());
-
 		ClientCommandHandler.instance.registerCommand(new ClientCommandGuiConfig());
 	}
 
@@ -232,6 +253,12 @@ public class ClientProxy implements ISidedProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityToad.class, RenderToad::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityRaven.class, RenderRaven::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityUran.class, RenderUran::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityHellhound.class, RenderHellhound::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityHellhoundAlpha.class, RenderAlphaHellhound::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityBlackDog.class, RenderBlackDog::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityDemon.class, RenderDemon::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityDemoness.class, RenderDemoness::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityImp.class, RenderImp::new);
 		MinecraftForge.EVENT_BUS.register(new RenderBatSwarm.PlayerHider());
 
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCauldron.class, new TileRenderCauldron());
@@ -275,5 +302,31 @@ public class ClientProxy implements ISidedProxy {
 	@Override
 	public void stopMimicking(EntityPlayer p) {
 		MimicEventHandler.stopMimicking((AbstractClientPlayer) p);
+	}
+
+	@Override
+	public void registerTexture(Fluid fluid) {
+		StateMapper mapper = new StateMapper(fluid);
+		ModelBakery.registerItemVariants(Item.getItemFromBlock(fluid.getBlock()));
+		ModelLoader.setCustomMeshDefinition(Item.getItemFromBlock(fluid.getBlock()), mapper);
+		ModelLoader.setCustomStateMapper(fluid.getBlock(), mapper);
+	}
+
+	private static class StateMapper extends StateMapperBase implements ItemMeshDefinition {
+		private final ModelResourceLocation location;
+
+		public StateMapper(Fluid fluid) {
+			this.location = new ModelResourceLocation(new ResourceLocation(LibMod.MOD_ID, "fluid"), fluid.getName());
+		}
+
+		@Override
+		protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
+			return location;
+		}
+
+		@Override
+		public ModelResourceLocation getModelLocation(ItemStack stack) {
+			return location;
+		}
 	}
 }

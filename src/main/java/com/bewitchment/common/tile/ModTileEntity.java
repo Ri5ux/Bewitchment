@@ -2,6 +2,7 @@ package com.bewitchment.common.tile;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -11,6 +12,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.Random;
 
@@ -28,9 +30,11 @@ public abstract class ModTileEntity extends TileEntity {
 	}
 
 	public void onBlockBroken(World worldIn, BlockPos pos, IBlockState state) {
+		// Override
 	}
 
 	public void onBlockHarvested(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack) {
+		// Override
 	}
 
 	protected abstract void readAllModDataNBT(NBTTagCompound tag);
@@ -41,10 +45,21 @@ public abstract class ModTileEntity extends TileEntity {
 
 	protected abstract void readModSyncDataNBT(NBTTagCompound tag);
 
+	protected void dropInventory(ItemStackHandler handler) {
+		if (!this.getWorld().isRemote && this.getWorld().getGameRules().getBoolean("doTileDrops")) {
+			for (int i = 0; i < handler.getSlots(); i++) {
+				ItemStack is = handler.getStackInSlot(i);
+				if (!is.isEmpty()) {
+					InventoryHelper.spawnItemStack(this.getWorld(), this.getPos().getX(), this.getPos().getY(), this.getPos().getZ(), is);
+				}
+			}
+		}
+	}
+
 	public void syncToClient() {
-		if (world != null) {
-			IBlockState state = world.getBlockState(pos);
-			world.notifyBlockUpdate(pos, state, state, 3);
+		if (this.world != null) {
+			IBlockState state = this.world.getBlockState(this.pos);
+			this.world.notifyBlockUpdate(this.pos, state, state, 3);
 		}
 	}
 
@@ -56,7 +71,7 @@ public abstract class ModTileEntity extends TileEntity {
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		readAllModDataNBT(tag);
+		this.readAllModDataNBT(tag);
 	}
 
 	/**
@@ -68,7 +83,7 @@ public abstract class ModTileEntity extends TileEntity {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		final NBTTagCompound ret = super.writeToNBT(tag);
-		writeAllModDataNBT(ret);
+		this.writeAllModDataNBT(ret);
 		return ret;
 	}
 
@@ -79,7 +94,7 @@ public abstract class ModTileEntity extends TileEntity {
 	 */
 	@Override
 	public final SPacketUpdateTileEntity getUpdatePacket() {
-		return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
+		return new SPacketUpdateTileEntity(this.pos, 0, this.getUpdateTag());
 	}
 
 	/**
@@ -90,7 +105,7 @@ public abstract class ModTileEntity extends TileEntity {
 	@Override
 	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound tag = super.getUpdateTag();
-		writeModSyncDataNBT(tag);
+		this.writeModSyncDataNBT(tag);
 		return tag;
 	}
 
@@ -102,7 +117,7 @@ public abstract class ModTileEntity extends TileEntity {
 	 */
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
-		handleUpdateTag(packet.getNbtCompound());
+		this.handleUpdateTag(packet.getNbtCompound());
 	}
 
 	/**
@@ -112,7 +127,7 @@ public abstract class ModTileEntity extends TileEntity {
 	 */
 	@Override
 	public void handleUpdateTag(NBTTagCompound tag) {
-		readModSyncDataNBT(tag);
+		this.readModSyncDataNBT(tag);
 	}
 
 	/**

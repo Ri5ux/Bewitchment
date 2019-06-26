@@ -7,6 +7,7 @@ import com.bewitchment.common.lib.LibBlockName;
 import com.bewitchment.common.tile.tiles.TileEntityApiary;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -39,6 +40,7 @@ public class BlockApiary extends BlockModTileEntity {
 		setSoundType(SoundType.WOOD);
 		setResistance(2F);
 		setHardness(2F);
+		setHarvestLevel("axe", 0);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -52,6 +54,12 @@ public class BlockApiary extends BlockModTileEntity {
 	public int getMetaFromState(IBlockState state) {
 		final EnumFacing facing = state.getValue(FACING);
 		return facing.getHorizontalIndex();
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+		return BlockFaceShape.UNDEFINED;
 	}
 
 	@SuppressWarnings("deprecation")

@@ -29,7 +29,7 @@ public class BlockFakeIceStairs extends BlockStairs implements IModelRegister {
 
 	public BlockFakeIceStairs(String unlocalizedName, IBlockState state, Material material) {
 		super(state);
-		setTranslationKey(LibBlockName.FAKE_ICE_STAIRS);
+		setTranslationKey(LibMod.MOD_ID + "." + LibBlockName.FAKE_ICE_STAIRS);
 		setRegistryName(new ResourceLocation(LibMod.MOD_ID, unlocalizedName));
 		setCreativeTab(ModCreativeTabs.BLOCKS_CREATIVE_TAB);
 		useNeighborBrightness = true;
@@ -39,8 +39,9 @@ public class BlockFakeIceStairs extends BlockStairs implements IModelRegister {
 	}
 
 	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
+	@SideOnly(Side.CLIENT)
+	public BlockRenderLayer getRenderLayer() {
+		return BlockRenderLayer.TRANSLUCENT;
 	}
 
 	@Override
@@ -49,31 +50,10 @@ public class BlockFakeIceStairs extends BlockStairs implements IModelRegister {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
-	}
-
-	@Override
-	public boolean isBlockNormalCube(IBlockState state) {
-		return false;
-	}
-
-	@Override
-	public boolean isFullCube(IBlockState state) {
-		return false;
-	}
-
-	@Override
-	public boolean isTopSolid(IBlockState state) {
-		return false;
-	}
-
-	@Override
 	public boolean shouldSideBeRendered(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
 		IBlockState sideState = world.getBlockState(pos.offset(side));
 		Block block = sideState.getBlock();
-		return block != this && super.shouldSideBeRendered(state, world, pos, side);
+		return state != sideState ? true : block != this && super.shouldSideBeRendered(state, world, pos, side);
 	}
 
 	@SideOnly(Side.CLIENT)

@@ -3,7 +3,6 @@ package com.bewitchment.common.content.tarot;
 import com.bewitchment.api.divination.ITarot;
 import com.bewitchment.common.lib.LibMod;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -100,7 +99,7 @@ public class TarotHandler {
 
 		@Override
 		public String toString() {
-			return I18n.format(getTranslationKey()) + ", " + number + (reversed ? ", reversed" : "");
+			return this.getTranslationKey() + ", " + this.number + (this.reversed ? ", reversed" : "");
 		}
 	}
 

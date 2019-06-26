@@ -1,5 +1,6 @@
 package com.bewitchment.api.ritual;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -8,11 +9,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Random;
 
 public interface IRitual extends IForgeRegistryEntry<IRitual> {
 
@@ -27,6 +31,14 @@ public interface IRitual extends IForgeRegistryEntry<IRitual> {
 	 */
 	public @Nonnull
 	NonNullList<Ingredient> getInput();
+
+	/**
+	 * The input entities that trigger the ritual.
+	 *
+	 * @return the list of Entities to be sacrificed
+	 */
+	public @Nonnull
+	NonNullList<Class<? extends Entity>> getSacrifices();
 
 	/**
 	 * @return the raw output without modifications. This is mainly used for showing the recipe in JEI
@@ -165,5 +177,10 @@ public interface IRitual extends IForgeRegistryEntry<IRitual> {
 	 * @return the value in AP/ME/MP
 	 */
 	public int getRequiredStartingPower();
+
+	@SideOnly(Side.CLIENT)
+	default void onRandomDisplayTick(World world, BlockPos mainGlyphPos, BlockPos effectivePos, Random rng) {
+		//Override
+	}
 
 }

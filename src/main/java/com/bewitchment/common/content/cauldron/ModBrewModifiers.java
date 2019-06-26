@@ -11,16 +11,21 @@ import com.bewitchment.common.lib.LibMod;
 import com.bewitchment.common.tile.tiles.TileEntityCauldron;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CompoundIngredient;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.DyeUtils;
 import net.minecraftforge.oredict.OreIngredient;
 
 import java.util.Arrays;
 
 public class ModBrewModifiers {
+
+	public static final int[] dyeColors = {16383998, 16351261, 13061821, 3847130, 16701501, 8439583, 15961002, 4673362, 10329495, 1481884, 8991416, 3949738, 8606770, 6192150, 11546150, 1908001};
 
 	public static void init() {
 
@@ -34,6 +39,7 @@ public class ModBrewModifiers {
 		api.registerBrewModifier(DefaultModifiers.SUPPRESS_ENTITY_EFFECT);
 		api.registerBrewModifier(DefaultModifiers.SUPPRESS_IN_WORLD_EFFECT);
 		api.registerBrewModifier(DefaultModifiers.COLOR);
+		api.registerBrewModifier(DefaultModifiers.SUPPRESS_PARTICLES);
 	}
 
 	private static void initApiModifiers() {
@@ -61,7 +67,7 @@ public class ModBrewModifiers {
 			}
 		};
 
-		DefaultModifiers.GAS_CLOUD_DURATION = new SimpleModifier("gas_duration", Ingredient.fromItem(ModItems.hellebore)) {
+		DefaultModifiers.GAS_CLOUD_DURATION = new SimpleModifier("gas_duration", Ingredient.fromItem(ModItems.yew_aril)) {
 
 			@Override
 			public boolean canApply(IBrewEffect brew) {
@@ -69,7 +75,7 @@ public class ModBrewModifiers {
 			}
 		};
 
-		DefaultModifiers.SUPPRESS_ENTITY_EFFECT = new SimpleModifier("suppress_entity", Ingredient.fromItem(Items.BRICK)) {
+		DefaultModifiers.SUPPRESS_ENTITY_EFFECT = new SimpleModifier("suppress_entity", Ingredient.fromItem(ModItems.toe_of_frog)) {
 
 			@Override
 			public boolean canApply(IBrewEffect brew) {
@@ -82,7 +88,7 @@ public class ModBrewModifiers {
 			}
 		};
 
-		DefaultModifiers.SUPPRESS_IN_WORLD_EFFECT = new SimpleModifier("suppress_in_world", Ingredient.fromItem(Items.NETHERBRICK)) {
+		DefaultModifiers.SUPPRESS_IN_WORLD_EFFECT = new SimpleModifier("suppress_in_world", Ingredient.fromItem(ModItems.chrysanthemum)) {
 
 			@Override
 			public boolean canApply(IBrewEffect brew) {
@@ -95,7 +101,8 @@ public class ModBrewModifiers {
 			}
 		};
 
-		DefaultModifiers.SUPPRESS_PARTICLES = new SimpleModifier("suppress_particles", Ingredient.fromItem(Items.DIAMOND)) {
+		//Fixme: Make sure this actually works
+		DefaultModifiers.SUPPRESS_PARTICLES = new SimpleModifier("suppress_particles", Ingredient.fromItem(ModItems.chromatic_quill)) {
 
 			@Override
 			public boolean canApply(IBrewEffect brew) {
@@ -143,7 +150,7 @@ public class ModBrewModifiers {
 			public ModifierResult acceptIngredient(IBrewEffect brew, ItemStack stack, IBrewModifierList currentModifiers) {
 				if (DyeUtils.isDye(stack)) {
 					int currentColor = currentModifiers.getLevel(this).orElse(TileEntityCauldron.DEFAULT_COLOR);
-					int newColor = DyeUtils.colorFromStack(stack).map(e -> e.getColorValue()).orElse(currentColor);
+					int newColor = DyeUtils.colorFromStack(stack).map(e -> getDyeColor(e)).orElse(currentColor);
 					return new ModifierResult(ColorHelper.blendColor(currentColor, newColor, 0.5f), ResultType.SUCCESS);
 				}
 				return new ModifierResult(ResultType.PASS);
@@ -155,9 +162,14 @@ public class ModBrewModifiers {
 			}
 
 			@Override
+			@SideOnly(Side.CLIENT)
 			public String getTooltipString(int lvl) {
 				return I18n.format("modifier.bewitchment.color", String.format("%06X", lvl));
 			}
 		};
+	}
+
+	public static int getDyeColor(EnumDyeColor dye) {
+		return dyeColors[dye.ordinal()];
 	}
 }
